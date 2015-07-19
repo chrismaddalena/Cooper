@@ -5,7 +5,6 @@ Coopers make barrels, like cooper.py makes barrels for phish.
 Cooper.py was created by Chris Maddalena for use with eSentire's phishing tool.
 The script will clone a website and automatically process the html to prepare it
 for use in a phishing campaign.
-Usage: python cooper.py URL_TO_CLONE PORT_FOR_HTTP_SERVER
 '''
 #Imports of importance
 import sys
@@ -44,9 +43,11 @@ if menu.gate or menu.email or menu.exit or menu.server:
 
 	if menu.email:
 		print bcolors.HEADER + "[+] Processing phishing email request..." + bcolors.ENDC
-		URL = menu.email
+		FILE = menu.email
+		toolbox.openSource(FILE)
 		phishemail.replaceURL()
 		phishemail.fixImageURL(URL)
+		phishemail.addTracking()t
 
 	if menu.exit:
 		print bcolors.HEADER + "[+] Processing exit template request..." + bcolors.ENDC
