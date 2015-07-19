@@ -2,6 +2,7 @@ import sys, SocketServer, SimpleHTTPServer #For running the SimpleHTTP server
 import urllib #For wget-like action
 import requests #For wget-like action
 from BeautifulSoup import BeautifulSoup #For parsing HTML
+import codecs
 
 #Terminal colors!
 class bcolors:
@@ -20,7 +21,7 @@ def collectSource(strURL):
 	try:
 		page = requests.get(strURL)
 		source = page.text
-		sourceFile = open("source.html", "w")
+		sourceFile = codecs.open("source.html", "w", encoding='utf-8')
 		sourceFile.write(source)
 		sourceFile.close()
 		print bcolors.OKGREEN + "[+] Succesfully connected to " + strURL + bcolors.ENDC
