@@ -29,6 +29,18 @@ def collectSource(strURL):
 		print bcolors.FAIL + "[-] Check URL - Must be valid (ex: http://www.foo.bar)" + bcolors.ENDC
 		sys.exit(0)
 
+def openSource(strFile):
+	print "[+] Opening source HTML file: " + strFile
+	try:
+		inputFile = open(strFile, "r")
+		source = inputFile.read()
+		sourceFile = open("source.html", "w")
+		sourceFile.write(source)
+		sourceFile.close()
+	except:
+		print bcolors.FAIL + "[-] Could not read in emil source. Check file." + bcolors.ENDC
+		sys.exit(0)
+
 #Takes a port number and starts a server at 127.0.0.1:PORT to view final index.html
 def startHTTPServer(PORT):
 	PORT = int(PORT)
