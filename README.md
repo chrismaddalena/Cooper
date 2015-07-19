@@ -31,3 +31,10 @@ The main script. It may eventually offer a menu with more verbose information, s
 * Images are scraped and then encoded in Base64 before being embedded in the template. This is to make it so the templates are not reliant on the website being available/keeping the images where they are. If you do not want this, then remove the encoding lines from the fixImageURL() functions.
 
 * The HTTP server option is there to enable you to easily review Cooper's output by hitting 127.0.0.1:PORT. You could just open the index.html, but why would that be cooler than this?
+
+###Setup:
+**Find the setup files inside the setup directory.**
+Cooper requires several libs for scraping websites and parsing the HTML. Use pip and the requirements.txt to install dependencies.
+>pip install -r requirements.txt
+
+Then you can check the dependencies by running setup_check.py.
