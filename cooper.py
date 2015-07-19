@@ -47,7 +47,7 @@ if menu.gate or menu.email or menu.exit or menu.server:
 		toolbox.openSource(FILE)
 		phishemail.replaceURL()
 		phishemail.fixImageURL(URL)
-		phishemail.addTracking()t
+		phishemail.addTracking()
 
 	if menu.exit:
 		print bcolors.HEADER + "[+] Processing exit template request..." + bcolors.ENDC
