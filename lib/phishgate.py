@@ -1,6 +1,6 @@
 import re #Used for RegEx
 from BeautifulSoup import BeautifulSoup #For parsing HTML
-import urlparse #For joining URLs for <img> tags -- unnecessary when TODO is done
+import urlparse #For joining URLs for <img> tags
 import base64, urllib
 
 #Terminal colors!
