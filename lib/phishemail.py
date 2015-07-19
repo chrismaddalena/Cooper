@@ -1,6 +1,7 @@
 import re #Used for RegEx
 from BeautifulSoup import BeautifulSoup #For parsing HTML
 import urlparse #For joining URLs for <img> tags -- unnecessary when TODO is done
+import base64, urllib
 
 #Terminal colors!
 class bcolors:
@@ -33,9 +34,9 @@ def replaceURL():
 			output = open("source.html", "w")
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
-			print bcolors.OKGREEN + "[+] Parsing successful. URLs replaced."
+			print bcolors.OKGREEN + "[+] URL parsing successful. URLs replaced."
 	except:
-		print bcolors.FAIL + "[-] Parsing failed. Make sure the html file exists and is readable." + bcolors.ENDC
+		print bcolors.FAIL + "[-] URL parsing failed. Make sure the html file exists and is readable." + bcolors.ENDC
 
 #This is Step 2
 def fixImageURL(strURL):
@@ -62,10 +63,10 @@ def fixImageURL(strURL):
 			output = open("index.html", "w")
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
-			print bcolors.OKGREEN + "[+] Parsing successful. IMG src's fixed." + bcolors.ENDC
+			print bcolors.OKGREEN + "[+] IMG parsing successful. IMG src's fixed." + bcolors.ENDC
 	except:
 		#Exception may occur if file doesn't exist or can't be read/written to
-		print bcolors.FAIL + "[-] Parsing failed. Make sure the html file exists and is readable." + bcolors.ENDC
+		print bcolors.FAIL + "[-] IMG parsing failed. Make sure the html file exists and is readable." + bcolors.ENDC
 
 #This is Step 3
 def addTracking():

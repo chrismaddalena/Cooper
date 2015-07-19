@@ -25,7 +25,9 @@ def collectSource(strURL):
 		sourceFile.close()
 		print bcolors.OKGREEN + "[+] Succesfully connected to " + strURL + bcolors.ENDC
 	except:
-		print bcolors.FAIL + "[-] Could not retrieve HTML. Check your internet connection." + bcolors.ENDC
+		#If scraping fails, all is lost and we can only exit
+		print bcolors.FAIL + "[-] Check URL - Must be valid (ex: http://www.foo.bar)" + bcolors.ENDC
+		sys.exit(0)
 
 #Takes a port number and starts a server at 127.0.0.1:PORT to view final index.html
 def startHTTPServer(PORT):
