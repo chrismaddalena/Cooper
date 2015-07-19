@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 '''
 Coopers make barrels, like cooper.py makes barrels for phish.

@@ -1,7 +1,8 @@
 import re #Used for RegEx
 from BeautifulSoup import BeautifulSoup #For parsing HTML
 import urlparse #For joining URLs for <img> tags
-import base64, urllib
+import base64
+import urllib
 
 #Terminal colors!
 class bcolors:
@@ -23,7 +24,7 @@ def replaceURL():
 	try:
 		#Print href URLs that will be replaced
 		print "\n".join(re.findall('<a href="?\'?([^"\'>]*)', open('source.html').read()))
-		with open ('source.html', "r") as html:
+		with open('source.html', "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
 			#Find all <a href... and replace URLs with our new text/URL
@@ -48,7 +49,7 @@ def fixImageURL(strURL):
 		#Print img src URLs that will be modified and provide info
 		print "\n".join(re.findall('src="(.*?)"', open('source.html').read()))
 		print "[+] Fixing src with " + strURL + "..."
-		with open ('source.html', "r") as html:
+		with open('source.html', "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
 			#Find all <img> with src attribute and create a full URL to download and embed image(s)
@@ -72,13 +73,13 @@ def fixImageURL(strURL):
 def addTracking():
 	strTracking = '<img src="{{links.tracking}}" style="width:1px; height:1px;"/>'
 	try:
-		with open ('source.html', "r") as html:
+		with open('source.html', "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			source = html.readlines()
 			soup = BeautifulSoup(str(source))
 
 			#Whaaaaaaaat goes here?
-			
+
 			source = str(soup)
 
 			#Write the updated addresses to index.html

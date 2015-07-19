@@ -1,4 +1,6 @@
-import sys, SocketServer, SimpleHTTPServer #For running the SimpleHTTP server
+import sys
+import SocketServer
+import SimpleHTTPServer #For running the SimpleHTTP server
 import urllib #For wget-like action
 import requests #For wget-like action
 from BeautifulSoup import BeautifulSoup #For parsing HTML
