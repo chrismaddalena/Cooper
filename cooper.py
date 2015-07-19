@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 '''
 Coopers make barrels, like cooper.py makes barrels for phish.
 Cooper.py was created by Chris Maddalena for use with eSentire's phishing tool.
@@ -8,10 +10,14 @@ Usage: python cooper.py URL_TO_CLONE PORT_FOR_HTTP_SERVER
 '''
 #Imports of importance
 import sys
-import phishgate #Custom functions for generating phishgates!
-import phishemail #Custom functions for phishing emails!
-import phishexit #Custom functions for exit pages!
-import toolbox
+
+#using init file and we'll import all modules from the lib dir.
+#cleans up some code lines
+from lib import *
+#import phishgate #Custom functions for generating phishgates!
+#import phishemail #Custom functions for phishing emails!
+#import phishexit #Custom functions for exit pages!
+#import toolbox
 from optparse import OptionParser
 
 #Terminal colors!
