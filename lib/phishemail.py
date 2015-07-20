@@ -35,7 +35,7 @@ def replaceURL():
 			output = open("source.html", "w")
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
-			print bcolors.OKGREEN + "[+] URL parsing successful. URLs replaced."
+			print bcolors.OKGREEN + "[+] URL parsing successful. URLs replaced." + bcolors.ENDC
 	except:
 		print bcolors.FAIL + "[-] URL parsing failed. Make sure the html file exists and is readable." + bcolors.ENDC
 
