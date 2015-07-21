@@ -29,6 +29,7 @@ class bcolors:
 parser = OptionParser()
 parser.add_option("-p", "--phishgate",  action="store", type="string", dest="gate", help="Specifies URL to use to create phishgate")
 parser.add_option("-e", "--email",  action="store", type="string", dest="email", help="Specifies file to use to create phishing email template")
+parser.add_option("-u", "--url",  action="store", type="string", dest="url", help="Specifies URL for images in phishing email templates")
 parser.add_option("-x", "--exit",  action="store", type="string", dest="exit", help="Specifies URL to use to create an exit template")
 parser.add_option("-s", "--serverport", action="store", type="int", dest="serverport", help="Use to start HTTP server after template is created")
 (menu, args) = parser.parse_args()
@@ -47,7 +48,11 @@ if menu.gate or menu.email or menu.exit or menu.server:
 		FILE = menu.email
 		toolbox.openSource(FILE)
 		phishemail.replaceURL()
-		phishemail.fixImageURL(URL)
+		if menu.url:
+			URL = menu.url
+			phishemail.fixImageURL(URL)
+		else:
+			print bcolors.WARNING + "[!] No URL specified, so images will not be processed." + bcolors.ENDC
 		phishemail.addTracking()
 
 	if menu.exit:

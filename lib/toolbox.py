@@ -32,12 +32,14 @@ def collectSource(strURL):
 		print bcolors.FAIL + "[-] Check URL - Must be valid (ex: http://www.foo.bar)" + bcolors.ENDC
 		sys.exit(0)
 
+#Takes a txt or html file, takes contents, and dumps it into a source.html file for modification
+#Original file is preserved and new source.html file is created with utf-8 encoding to avoid encoding issues later
 def openSource(strFile):
 	print "[+] Opening source HTML file: " + strFile
 	try:
 		inputFile = open(strFile, "r")
 		source = inputFile.read()
-		sourceFile = open("source.html", "w")
+		sourceFile = codecs.open("source.html", "w", encoding='utf-8')
 		sourceFile.write(source)
 		sourceFile.close()
 	except:
