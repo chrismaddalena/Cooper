@@ -47,7 +47,7 @@ def fixImageURL(strURL):
 	#Open source.html, read lines, and begin parsing to replace all incomplete img src URLs
 	try:
 		#Print img src URLs that will be modified and provide info
-		print "\n".join(re.findall('src="(.*?)"', open('source.html').read()))
+		print "\n".join(re.findall('src="(.*?)"', open("source.html").read()))
 		print "[+] Fixing src with " + strURL + "..."
 		with open('source.html', "r") as html:
 			#Read in the source html and parse with BeautifulSoup
@@ -85,6 +85,7 @@ def addTracking():
 			output = open("index.html", "w")
 			output.write(tracked.replace('[','').replace(']',''))
 			output.close()
+			print bcolors.OKGREEN + "[+] Tracking has been inserted." + bcolors.ENDC
 	except:
 		#Exception may occur if file doesn't exist or can't be read/written to
 		print bcolors.FAIL + "[-] Failed to insert tracking. Make sure the html file exists and is readable." + bcolors.ENDC
