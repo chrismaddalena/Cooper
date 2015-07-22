@@ -13,6 +13,7 @@ The main script. It may eventually offer a menu with more verbose information, s
 * -x for eXit - Use Cooper's phishexit.py module. Specify a URL.
 
 **You can also use...**
+* -u for URL - Specify a URL you want Cooper to use when fixing image links in an email with images.
 * -s for Server - Add this when you want Cooper to start the HTTP server. Specify a PORT #.
 * -h - View this help information.
 
@@ -38,3 +39,5 @@ Cooper requires several libs for scraping websites and parsing the HTML. Use pip
 >pip install -r requirements.txt
 
 Then you can check the dependencies by running setup_check.py.
+
+Special thanks to Ninjasl0th for his help with this project!
