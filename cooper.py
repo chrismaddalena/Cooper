@@ -35,7 +35,7 @@ parser.add_option("-s", "--serverport", action="store", type="int", dest="server
 (menu, args) = parser.parse_args()
 
 #Process script options
-if menu.gate or menu.email or menu.exit or menu.server:
+if menu.gate or menu.email or menu.exit or menu.serverport:
 	if menu.gate:
 		print bcolors.HEADER + "[+] Processing phishgate request..." + bcolors.ENDC
 		URL = menu.gate
@@ -64,6 +64,7 @@ if menu.gate or menu.email or menu.exit or menu.server:
 
 	if menu.serverport:
 		PORT = menu.serverport
+		print bcolors.HEADER + "[+] Starting HTTP server on port", PORT, bcolors.ENDC
 		toolbox.startHTTPServer(PORT)
 else:
 	parser.print_help()

@@ -1,3 +1,7 @@
 .pyc
 .DS_Store
 .html
+
+*.pyc
+
+*.html

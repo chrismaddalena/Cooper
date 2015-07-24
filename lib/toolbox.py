@@ -52,8 +52,8 @@ def startHTTPServer(PORT):
 	handler = SimpleHTTPServer.SimpleHTTPRequestHandler
 	try:
 		httpd = SocketServer.TCPServer(("", PORT), handler)
-		print "[+] Done. See output at port", PORT
+		print "[+] Done. See output at 127.0.0.1:",PORT
 		print "[+] Use CTRL+C to kill the web server."
 		httpd.serve_forever()
 	except:
-		print bcolors.FAIL + "[-] Server could not be started. Check port number." + bcolors.ENDC
+		print bcolors.FAIL + "[-] Server stopped or could not be started. Check port number." + bcolors.ENDC
