@@ -26,6 +26,7 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+#Create options
 parser = OptionParser()
 parser.add_option("-p", "--phishgate",  action="store", type="string", dest="gate", help="Specifies URL to use to create phishgate")
 parser.add_option("-e", "--email",  action="store", type="string", dest="email", help="Specifies file to use to create phishing email template")
@@ -38,13 +39,19 @@ parser.add_option("-n", "--encode", action="store", type="string", dest="encode"
 
 #Process script options
 if menu.gate or menu.email or menu.exit or menu.encode or menu.serverport or menu.decode:
+	#If phishgate is selected
 	if menu.gate:
 		print bcolors.HEADER + "[+] " + bcolors.ENDC + "Processing phishgate request..."
 		URL = menu.gate
 		toolbox.collectSource(URL)
-		phishgate.replaceURL()
-		phishgate.fixImageURL(URL)
+		phishgate.replaceURL(URL)
+		if menu.url:
+			URL = menu.url
+			phishgate.fixImageURL(URL)
+		else:
+			print bcolors.WARNING + "[!] "  + bcolors.ENDC + "No URL provided, so images will not be processed."
 
+	#If email is selected
 	if menu.email:
 		print bcolors.HEADER + "[+] "  + bcolors.ENDC + "Processing phishing email request..."
 		FILE = menu.email
@@ -57,22 +64,30 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.serverport or men
 			URL = menu.url
 			phishemail.fixImageURL(URL)
 		else:
-			print bcolors.WARNING + "[!] "  + bcolors.ENDC + "No URL specified, so images will not be processed."
+			print bcolors.WARNING + "[!] "  + bcolors.ENDC + "No URL provided, so images will not be processed."
 		phishemail.addTracking()
 
+	#If exit tempalte is selected
 	if menu.exit:
 		print bcolors.HEADER + "[+] " + bcolors.ENDC + "Processing exit template request..."
 		URL = menu.exit
 		toolbox.collectSource(URL)
 		phishexit.replaceURL()
-		phishexit.fixImageURL(URL)
+		if menu.url:
+			URL = menu.url
+			phishexit.fixImageURL(URL)
+		else:
+			print bcolors.WARNING + "[!] "  + bcolors.ENDC + "No URL provided, so images will not be processed."
 
+	#If image encoding is selected
 	if menu.encode:
 		toolbox.encodeImage(menu.encode)
 
+	#If the user requests the HTTP server to be started
 	if menu.serverport:
 		PORT = menu.serverport
 		print bcolors.HEADER + "[+] "  + bcolors.ENDC + "Starting HTTP server on port", PORT
 		toolbox.startHTTPServer(PORT)
 else:
+	#Print help if -h is used or an invalid combination of options/input is used
 	parser.print_help()

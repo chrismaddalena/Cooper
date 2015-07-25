@@ -15,7 +15,7 @@ The main script. It may eventually offer a menu with more verbose information, s
 
 **You can also use...**
 * -d for Decode - Indicate an email needs to be deocded and specify the encoding (base64 or quoted-printable).
-* -u for URL - Specify a URL you want Cooper to use when fixing image links in an email with images.
+* -u for URL - Specify a URL you want Cooper to use when you need it to fix image links.
 * -s for Server - Add this when you want Cooper to start the HTTP server. Specify a PORT #.
 * -h - View this help information.
 
@@ -32,7 +32,7 @@ The main script. It may eventually offer a menu with more verbose information, s
 ####Creating an email:
 * Get the source of an email to clone and save it to a file.
 * Remove the additional text (e.g. delivery info, etc.)
-* To process an email encoded in base64: cooper.py -e email.html -d base64
+* To process an email encoded in base64 with images hosted on www.foo.bar: cooper.py -e email.html -d base64 -u http://www.foo.bar
 
 ####Creating a phishgate:
 * Find a webpage to clone.
@@ -40,7 +40,7 @@ The main script. It may eventually offer a menu with more verbose information, s
 
 ####Creating an exit page:
 * Find a URL that pulls up the 404 page of your cloned website.
-* To clone the 404 page: cooper.py -x http://www.foo.bar/garbage.php
+* To clone the 404 page: cooper.py -x http://www.foo.bar/garbage.php -u http://www.foo.bar
 
 ###Misc Info:
 * URLs are replaced with text that will do **nothing** for you. This is text that was needed for the particular phishing tool Cooper was created to work with. Modify the replaceURL() functions as needed.

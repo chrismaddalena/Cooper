@@ -52,7 +52,7 @@ def replaceURL():
 				link['href'] = '{{links.generic}}'
 			source = str(soup)
 			#Write the updated URLs to source.html while removing the [' and ']
-			output = open('source.html', "w")
+			output = open('index.html', "w")
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "URL parsing successful. URLs replaced."
@@ -69,7 +69,7 @@ def fixImageURL(strURL):
 		#Print img src URLs that will be modified and provide info
 		print "\n".join(re.findall('src="(.*?)"', open("source.html").read()))
 		print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Fixing src with " + strURL + "..."
-		with open('source.html', "r") as html:
+		with open('index.html', "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
 			#Find all <img> with src attribute and create a full URL to download and embed image(s)
@@ -81,7 +81,7 @@ def fixImageURL(strURL):
 				img['src'] = "data:image/png;base64," + img_64
 			source = str(soup.prettify(encoding='utf-8'))
 			#Write the updated addresses to source.html while removing the [' and ']
-			output = open("source.html", "w")
+			output = open("index.html", "w")
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print bcolors.OKGREEN + "[+] IMG parsing successful. IMG src's fixed." + bcolors.ENDC
@@ -95,7 +95,7 @@ def addTracking():
 	strTracking = '<img src="{{links.tracking}}" style="width:1px; height:1px;"/>'
 	print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Inserting tracking image."
 	try:
-		with open('source.html', "r") as html:
+		with open('index.html', "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			source = html.read()
 			index = source.find(r"</body")
