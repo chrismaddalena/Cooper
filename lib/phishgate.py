@@ -16,23 +16,27 @@ class bcolors:
 	UNDERLINE = '\033[4m'
 
 #This is Step 1 - URLs are replaced with our phishing URLs and new text is saved to source.html
-def replaceURL():
+def replaceURL(strURL):
 	#Provide user feedback
 	print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Replacing URLs..."
 	print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "URLs that will be replaced:"
-	#Open source, read lines, and begin parsing to replace all URLs inside <a> tags with href
+	#Open source, read lines, and begin parsing to replace all URLs for scripts and links
 	try:
 		#Print href URLs that will be replaced
 		print "\n".join(re.findall('<a href="?\'?([^"\'>]*)', open('source.html').read()))
 		with open('source.html', "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
-			#Find all <a href... and replace URLs with our new text/URL
+			#Find all links and replace URLs with our new text/URLs
 			for link in soup.findAll('a', href=True):
 				link['href'] = '{{links.phishgate}}'
+			for link in soup.findAll('link', href=True):
+				link['href'] = urlparse.urljoin(strURL, link['href'])
+			for link in soup.findAll('script', src=True):
+				link['src'] = urlparse.urljoin(strURL, link['src'])
 			source = str(soup)
 			#Write the updated URLs to source.html while removing the [' and ']
-			output = open("source.html", "w")
+			output = open("index.html", "w")
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "URL parsing successful. URLs replaced."
@@ -43,13 +47,13 @@ def replaceURL():
 def fixImageURL(strURL):
 	#Provide user feedback
 	print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Finding IMG tags with src=/... for replacement."
-	print ncolors.OKGREEN + "[+] " + bcolors.ENDC + "RegEx matches:"
+	print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "RegEx matches:"
 	#Open source, read lines, and begin parsing to replace all incomplete img src URLs
 	try:
 		#Print img src URLs that will be modified and provide info
 		print "\n".join(re.findall('src="(.*?)"', open('source.html').read()))
 		print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Fixing src with " + strURL + "..."
-		with open('source.html', "r") as html:
+		with open('index.html', "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
 			#Find all <img> with src attribute and create a full URL to download and embed image(s)

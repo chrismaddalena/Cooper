@@ -27,12 +27,16 @@ def replaceURL():
 		with open('source.html', "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
-			#Find all <a href... and replace URLs with our new text/URL
+			#Find all links and replace URLs with our new text/URL
 			for link in soup.findAll('a', href=True):
 				link['href'] = '{{links.generic}}'
+			for link in soup.findAll('link', href=True):
+				link['href'] = urlparse.urljoin(strURL, link['href'])
+			for link in soup.findAll('script', src=True):
+				link['src'] = urlparse.urljoin(strURL, link['src'])
 			source = str(soup)
 			#Write the updated URLs to source.html while removing the [' and ']
-			output = open("source.html", "w")
+			output = open("index.html", "w")
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "URL parsing successful. URLs replaced."
@@ -49,7 +53,7 @@ def fixImageURL(strURL):
 		#Print img src URLs that will be modified and provide info
 		print "\n".join(re.findall('src="(.*?)"', open('source.html').read()))
 		print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Fixing src with " + strURL + "..."
-		with open('source.html', "r") as html:
+		with open('index.html', "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
 			#Find all <img> with src attribute and create a full URL to download and embed image(s)

@@ -42,8 +42,12 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.serverport or men
 		print bcolors.HEADER + "[+] " + bcolors.ENDC + "Processing phishgate request..."
 		URL = menu.gate
 		toolbox.collectSource(URL)
-		phishgate.replaceURL()
-		phishgate.fixImageURL(URL)
+		phishgate.replaceURL(URL)
+		if menu.url:
+			URL = menu.url
+			phishgate.fixImageURL(URL)
+		else:
+			print bcolors.WARNING + "[!] "  + bcolors.ENDC + "No URL specified, so images will not be processed."
 
 	if menu.email:
 		print bcolors.HEADER + "[+] "  + bcolors.ENDC + "Processing phishing email request..."
@@ -65,7 +69,11 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.serverport or men
 		URL = menu.exit
 		toolbox.collectSource(URL)
 		phishexit.replaceURL()
-		phishexit.fixImageURL(URL)
+		if menu.url:
+			URL = menu.url
+			phishexit.fixImageURL(URL)
+		else:
+			print bcolors.WARNING + "[!] "  + bcolors.ENDC + "No URL specified, so images will not be processed."
 
 	if menu.encode:
 		toolbox.encodeImage(menu.encode)
