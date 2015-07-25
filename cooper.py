@@ -31,39 +31,48 @@ parser.add_option("-p", "--phishgate",  action="store", type="string", dest="gat
 parser.add_option("-e", "--email",  action="store", type="string", dest="email", help="Specifies file to use to create phishing email template")
 parser.add_option("-u", "--url",  action="store", type="string", dest="url", help="Specifies URL for images in phishing email templates")
 parser.add_option("-x", "--exit",  action="store", type="string", dest="exit", help="Specifies URL to use to create an exit template")
+parser.add_option("-d", "--decode",  action="store", type="string", dest="decode", help="Tells Cooper to decode email source (accepts base64 and quoted-printable)")
 parser.add_option("-s", "--serverport", action="store", type="int", dest="serverport", help="Use to start HTTP server after template is created")
+parser.add_option("-n", "--encode", action="store", type="string", dest="encode", help="Use to encode an image in Base64 for embedding")
 (menu, args) = parser.parse_args()
 
 #Process script options
-if menu.gate or menu.email or menu.exit or menu.server:
+if menu.gate or menu.email or menu.exit or menu.encode or menu.serverport or menu.decode:
 	if menu.gate:
-		print bcolors.HEADER + "[+] Processing phishgate request..." + bcolors.ENDC
+		print bcolors.HEADER + "[+] " + bcolors.ENDC + "Processing phishgate request..."
 		URL = menu.gate
 		toolbox.collectSource(URL)
 		phishgate.replaceURL()
 		phishgate.fixImageURL(URL)
 
 	if menu.email:
-		print bcolors.HEADER + "[+] Processing phishing email request..." + bcolors.ENDC
+		print bcolors.HEADER + "[+] "  + bcolors.ENDC + "Processing phishing email request..."
 		FILE = menu.email
 		toolbox.openSource(FILE)
+		if menu.decode:
+			ENCODING = menu.decode
+			phishemail.decodeEmailText(ENCODING)
 		phishemail.replaceURL()
 		if menu.url:
 			URL = menu.url
 			phishemail.fixImageURL(URL)
 		else:
-			print bcolors.WARNING + "[!] No URL specified, so images will not be processed." + bcolors.ENDC
+			print bcolors.WARNING + "[!] "  + bcolors.ENDC + "No URL specified, so images will not be processed."
 		phishemail.addTracking()
 
 	if menu.exit:
-		print bcolors.HEADER + "[+] Processing exit template request..." + bcolors.ENDC
+		print bcolors.HEADER + "[+] " + bcolors.ENDC + "Processing exit template request..."
 		URL = menu.exit
 		toolbox.collectSource(URL)
 		phishexit.replaceURL()
 		phishexit.fixImageURL(URL)
 
+	if menu.encode:
+		toolbox.encodeImage(menu.encode)
+
 	if menu.serverport:
 		PORT = menu.serverport
+		print bcolors.HEADER + "[+] "  + bcolors.ENDC + "Starting HTTP server on port", PORT
 		toolbox.startHTTPServer(PORT)
 else:
 	parser.print_help()
