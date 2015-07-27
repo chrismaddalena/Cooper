@@ -24,16 +24,13 @@ def decodeEmailText(ENCODING):
 			print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Decoding quoted-printable text."
 			#Decode the quoted-printable text
 			source = quopri.decodestring(encoded)
-			output = open('source.html', "w")
-			output.write(source)
- 			output.close()
 		if ENCODING in ['base64', 'Base64', 'b64', 'B64']:
 			print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Decoding Base64 text."
 			#Decode the Base64 text
 			source = base64.b64decode(encoded)
-			output = open('source.html', "w")
-			output.write(source)
-			output.close()
+        output = open('source.html', "w")
+        output.write(source)
+        output.close()
 
 #This is Step 2 - URLs are replaced with our phishing URLs and new text is saved to source.html
 def replaceURL():
@@ -50,7 +47,7 @@ def replaceURL():
 			#Find all <a href... and replace URLs with our new text/URL
 			for link in soup.findAll('a', href=True):
 				link['href'] = '{{links.generic}}'
-			source = str(soup)
+			source = str(soup.prettify(encoding='utf-8'))
 			#Write the updated URLs to source.html while removing the [' and ']
 			output = open('index.html', "w")
 			output.write(source.replace('[','').replace(']',''))
@@ -101,8 +98,9 @@ def addTracking():
 			index = source.find(r"</body")
 			print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Closing body tag found at index " + str(index)
 			tracked = source[:index] + strTracking + source[index:]
+			soup = BeautifulSoup(tracked.replace('[','').replace(']',''))
 			output = open("index.html", "w")
-			output.write(tracked.replace('[','').replace(']',''))
+			output.write(soup.prettify(encoding='utf-8'))
 			output.close()
 			print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Tracking has been inserted."
 	except:
