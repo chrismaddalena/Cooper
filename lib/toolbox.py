@@ -54,7 +54,7 @@ def startHTTPServer(PORT):
 	try:
 		httpd = SocketServer.TCPServer(("", PORT), handler)
 		print bcolors.OKGREEN + "[+] "  + bcolors.ENDC + "Done. See output at 127.0.0.1:",PORT
-		print ncolors.WARNING + "[!] " + bcolors.ENDC + "Use CTRL+C to kill the web server."
+		print bcolors.WARNING + "[!] " + bcolors.ENDC + "Use CTRL+C to kill the web server."
 		httpd.serve_forever()
 	except:
 		print bcolors.FAIL + "[-] Server stopped or could not be started. Check port number." + bcolors.ENDC
@@ -66,4 +66,4 @@ def encodeImage(IMAGE):
 		print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Image has been encoded. Copy this string:\n"
 		img_64 = base64.b64encode(image.read())
 		print img_64 + "\n"
-		print ncolors.OKGREEN + "[+] " + bcolors.ENDC + "End of encoded string."
+		print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "End of encoded string."
