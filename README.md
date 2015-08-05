@@ -49,6 +49,9 @@ The main script. It may eventually offer a menu with more verbose information, s
 
 * The HTTP server option is there to enable you to easily review Cooper's output by hitting 127.0.0.1:PORT. You could just open the index.html, but why would that be cooler than this?
 
+###Known issues
+* If the website is hosted on a service like SquareSpace, Cooper will be unable to repair the images. The img tags look like "<img src="//static1.squarespace.com/static/52ebedcae4b0ad4aad060b4a/t/533b687ae4b01d79d0ae12a3/1437187699809/?format=1500w">.
+
 ###Setup:
 **Find the setup files inside the setup directory.**
 Cooper requires several libs for scraping websites and parsing the HTML. Use pip and the requirements.txt to install dependencies.
