@@ -44,7 +44,7 @@ def openSource(strFile):
 		sourceFile.write(source)
 		sourceFile.close()
 	except:
-		print bcolors.FAIL + "[-] Could not read in emil source. Check file." + bcolors.ENDC
+		print bcolors.FAIL + "[-] Could not read in email source. Check file." + bcolors.ENDC
 		sys.exit(0)
 
 #Takes a port number and starts a server at 127.0.0.1:PORT to view final index.html
