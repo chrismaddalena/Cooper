@@ -5,27 +5,16 @@ import base64 #For encoding and embedding images
 import urllib #For opening image URLs
 import quopri #Adds support for decoding quoted-printable text
 
-#Terminal colors!
-class bcolors:
-	HEADER = '\033[95m'
-	OKBLUE = '\033[94m'
-	OKGREEN = '\033[92m'
-	WARNING = '\033[93m'
-	FAIL = '\033[91m'
-	ENDC = '\033[0m'
-	BOLD = '\033[1m'
-	UNDERLINE = '\033[4m'
-
 #This is Step 1 - Determine encoding and decode if necessary
 def decodeEmailText(ENCODING):
 	with open('source.html', "r") as html:
 		encoded = html.read()
 		if ENCODING in ['quoted-printable', 'qp', 'q-p']:
-			print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Decoding quoted-printable text."
+			print"[+] Decoding quoted-printable text."
 			#Decode the quoted-printable text
 			source = quopri.decodestring(encoded)
 		if ENCODING in ['base64', 'Base64', 'b64', 'B64']:
-			print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Decoding Base64 text."
+			print "[+] Decoding Base64 text."
 			#Decode the Base64 text
 			source = base64.b64decode(encoded)
         output = open('source.html', "w")
@@ -35,8 +24,8 @@ def decodeEmailText(ENCODING):
 #This is Step 2 - URLs are replaced with our phishing URLs and new text is saved to source.html
 def replaceURL():
 	#Provide user feedback
-	print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Replacing URLs."
-	print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "URLs that will be replaced:"
+	print "[+] Replacing URLs."
+	print "[+] URLs that will be replaced:"
 	#Open source.html, read lines, and begin parsing to replace all URLs inside <a> tags with href
 	try:
 		#Print href URLs that will be replaced
@@ -52,20 +41,20 @@ def replaceURL():
 			output = open('index.html', "w")
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
-			print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "URL parsing successful. URLs replaced."
+			print "[+] URL parsing successful. URLs replaced."
 	except:
-		print bcolors.FAIL + "[-] URL parsing failed. Make sure the html file exists and is readable." + bcolors.ENDC
+		print "[-] URL parsing failed. Make sure the html file exists and is readable."
 
 #This is Step 3 - Images are found, downloaded, encoded in Base64, and embedded in source.html
 def fixImageURL(strURL):
 	#Provide user feedback
-	print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Finding IMG tags with src=/... for replacement."
-	print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "RegEx matches:"
+	print "[+] Finding IMG tags with src=/... for replacement."
+	print "[+] RegEx matches:"
 	#Open source.html, read lines, and begin parsing to replace all incomplete img src URLs
 	try:
 		#Print img src URLs that will be modified and provide info
 		print "\n".join(re.findall('src="(.*?)"', open("source.html").read()))
-		print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Fixing src with " + strURL + "..."
+		print "[+] Fixing src with " + strURL + "..."
 		with open('index.html', "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
@@ -81,28 +70,28 @@ def fixImageURL(strURL):
 			output = open("index.html", "w")
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
-			print bcolors.OKGREEN + "[+] IMG parsing successful. IMG src's fixed." + bcolors.ENDC
+			print "[+] IMG parsing successful. IMG src's fixed."
 	except:
 		#Exception may occur if file doesn't exist or can't be read/written to
-		print bcolors.FAIL + "[-] IMG parsing failed. Make sure the html file exists and is readable." + bcolors.ENDC
+		print "[-] IMG parsing failed. Make sure the html file exists and is readable."
 
 #This is Step 4 - Inserts our tracking image and writes everything to index.html
 def addTracking():
 	#Define the tracking image that will be inserted
 	strTracking = '<img src="{{links.tracking}}" style="width:1px; height:1px;"/>'
-	print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Inserting tracking image."
+	print "[+] Inserting tracking image."
 	try:
 		with open('index.html', "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			source = html.read()
 			index = source.find(r"</body")
-			print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Closing body tag found at index " + str(index)
+			print "[+] Closing body tag found at index " + str(index)
 			tracked = source[:index] + strTracking + source[index:]
 			soup = BeautifulSoup(tracked.replace('[','').replace(']',''))
 			output = open("index.html", "w")
 			output.write(soup.prettify(encoding='utf-8'))
 			output.close()
-			print bcolors.OKGREEN + "[+] " + bcolors.ENDC + "Tracking has been inserted."
+			print "[+] Tracking has been inserted."
 	except:
 		#Exception may occur if file doesn't exist or can't be read/written to
-		print bcolors.FAIL + "[-] Failed to insert tracking. Make sure the html file exists and is readable." + bcolors.ENDC
+		print "[-] Failed to insert tracking. Make sure the html file exists and is readable."
