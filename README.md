@@ -14,15 +14,15 @@ The main script. It may eventually offer a menu with more verbose information, s
 * -n for eNcode - Use Cooper to encode an image file as a Base64 string. Useful for embedding different images into a template or customizing a cloned email/website.
 
 **You can also use...**
-* -d for Decode - Indicate an email needs to be deocded and specify the encoding (base64 or quoted-printable).
-* -u for URL - Specify a URL you want Cooper to use when you need it to fix image links.
+* -d for Decode - Indicate an email needs to be decoded and specify the encoding (base64 or quoted-printable).
+* -u for URL - Specify a URL you want Cooper to use when you need it to fix links for images, CSS, and/or scripts.
 * -s for Server - Add this when you want Cooper to start the HTTP server. Specify a PORT #.
-* -h - View this help information.
+* -h for Help - View this help information.
 
 ###Modules:
 * toolbox.py - The toolbox handles the common tasks, such as retrieving HTML source from files and webpages and starting the HTTP server.
 
-* phishemail.py - This module handles generating phishing emails. Use -e and feed it a file. Use -d to indicate if decoding is necessary. Use -u to provide a URL for img tags.
+* phishemail.py - This module handles generating phishing emails. Use -e and feed it a file. Use -d to indicate if decoding is necessary. Use -u to provide a URL for img tags, scripts, and CSS.
 
 * phishgate.py - This module creates an index.html file suitable as a phishgate (a landing page for the phishing emails). Use -p and feed Cooper a URL or file (coming soon) to have Cooper output an index.html file so the webpage can be easily viewed in your browser via the HTTP server (if you start it).
 
@@ -48,6 +48,9 @@ The main script. It may eventually offer a menu with more verbose information, s
 * Images are scraped and then encoded in Base64 before being embedded in the template. This is to make it so the templates are not reliant on the website being available/keeping the images where they are. If you do not want this, then remove the encoding lines from the fixImageURL() functions.
 
 * The HTTP server option is there to enable you to easily review Cooper's output by hitting 127.0.0.1:PORT. You could just open the index.html, but why would that be cooler than this?
+
+###Known issues
+* If the website is hosted on a service like SquareSpace, Cooper will be unable to repair the images. The img tags look like "<img src="//static1.squarespace.com/static/52ebedcae4b0ad4aad060b4a/t/533b687ae4b01d79d0ae12a3/1437187699809/?format=1500w">.
 
 ###Setup:
 **Find the setup files inside the setup directory.**
