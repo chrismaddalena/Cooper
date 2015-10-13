@@ -4,16 +4,16 @@ import urlparse #For joining URLs for <img> tags
 import base64 #For encoding and embedding images
 import urllib #For opening image URLs
 
-#This is Step 1 - URLs are replaced with our phishing URLs and new text is saved to source.html
-def replaceURL():
+#This is Step 1 - URLs are replaced with our phishing URLs and new text is saved to output file
+def replaceURL(OUTPUT):
 	#Provide user feedback
 	print "[+] Replacing URLs..."
 	print "[+] URLs that will be replaced:"
 	#Open source, read lines, and begin parsing to replace all URLs inside <a> tags with href
 	try:
 		#Print href URLs that will be replaced
-		print "\n".join(re.findall('<a href="?\'?([^"\'>]*)', open('source.html').read()))
-		with open('source.html', "r") as html:
+		print "\n".join(re.findall('<a href="?\'?([^"\'>]*)', open(OUTPUT).read()))
+		with open(OUTPUT, "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
 			#Find all links and replace URLs with our new text/URL
@@ -24,25 +24,25 @@ def replaceURL():
 			for link in soup.findAll('script', src=True):
 				link['src'] = urlparse.urljoin(strURL, link['src'])
 			source = str(soup.prettify(encoding='utf-8'))
-			#Write the updated URLs to source.html while removing the [' and ']
-			output = open("index.html", "w")
+			#Write the updated URLs to the output file while removing the [' and ']
+			output = open(OUTPUT, "w")
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print "[+] URL parsing successful. URLs replaced."
 	except:
 		print "[-] URL parsing failed. Make sure the html file exists and is readable."
 
-#This is Step 2 - Images are found, downloaded, encoded in Base64, and embedded in index.html
-def fixImageURL(strURL):
+#This is Step 2 - Images are found, downloaded, encoded in Base64, and embedded in the output file
+def fixImageURL(strURL,OUTPUT):
 	#Provide user feedback
 	print "[+] Finding IMG tags with src=/... for replacement."
 	print "[+] RegEx matches:"
 	#Open source, read lines, and begin parsing to replace all incomplete img src URLs
 	try:
 		#Print img src URLs that will be modified and provide info
-		print "\n".join(re.findall('src="(.*?)"', open('source.html').read()))
+		print "\n".join(re.findall('src="(.*?)"', open(OUTPUT).read()))
 		print "[+] Fixing src with " + strURL + "..."
-		with open('index.html', "r") as html:
+		with open(OUTPUT, "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
 			#Find all <img> with src attribute and create a full URL to download and embed image(s)
@@ -53,8 +53,8 @@ def fixImageURL(strURL):
 				img_64 = base64.b64encode(image.read())
 				img['src'] = "data:image/png;base64," + img_64
 			source = str(soup.prettify(encoding='utf-8'))
-			#Write the updated addresses to source.html while removing the [' and ']
-			output = open("index.html", "w")
+			#Write the updated addresses to the output file while removing the [' and ']
+			output = open(OUTPUT, "w")
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print "[+] IMG parsing successful. IMG src's fixed."
