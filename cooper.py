@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 '''
 Coopers make barrels, like cooper.py makes barrels for phish.
@@ -27,7 +27,7 @@ parser.add_option("-c", "--collect",  action="store", type="string", dest="colle
 (menu, args) = parser.parse_args()
 
 #Default filename for the output files
-OUTPUT = "output.html"
+OUTPUT = "index.html"
 
 #Does the user want images to be encoded/embedded? True or False
 EMBED = menu.embed
