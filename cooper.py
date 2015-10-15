@@ -33,7 +33,7 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 	#If an output name is specified
 	if menu.output:
 		OUTPUT = menu.output
-		print "[+] Output file will be " + OUTPUT
+		print "[+] Output file will be: " + OUTPUT
 
 	#If email is selected
 	if menu.email:
@@ -46,7 +46,7 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 		phishemail.replaceURL(OUTPUT)
 		if menu.url:
 			URL = menu.url
-			phishemail.fixImageURL(URL,OUTPUT)
+			toolbox.fixImageURL(URL,OUTPUT)
 		else:
 			print "[!] No URL provided, so images will not be processed."
 		phishemail.addTracking(OUTPUT)
@@ -60,7 +60,7 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 		phishgate.fixForms(OUTPUT)
 		if menu.url:
 			URL = menu.url
-			phishgate.fixImageURL(URL,OUTPUT)
+			toolbox.fixImageURL(URL,OUTPUT)
 		else:
 			print "[!] No URL provided, so images will not be processed."
 		#Insert this URL last to avoid fixImageURL() & replaceURL() replacing the JS link
@@ -73,7 +73,7 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 		toolbox.collectSource(URL,OUTPUT)
 		if menu.url:
 			URL = menu.url
-			phishgate.fixImageURL(URL,OUTPUT)
+			toolbox.fixImageURL(URL,OUTPUT)
 		else:
 			print "[!] No URL provided, so images will not be processed."
 
@@ -88,7 +88,7 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 		toolbox.collectSource(URL,OUTPUT)
 		if menu.url:
 			URL = menu.url
-			phishgate.fixImageURL(URL,OUTPUT)
+			toolbox.fixImageURL(URL,OUTPUT)
 		else:
 			print "[!] No URL provided, so images will not be processed."
 
