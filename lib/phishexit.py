@@ -5,7 +5,7 @@ import base64 #For encoding and embedding images
 import urllib #For opening image URLs
 
 #This is Step 1 - URLs are replaced with our phishing URLs and new text is saved to output file
-def replaceURL(OUTPUT):
+def replaceURL(URL,OUTPUT):
 	#Provide user feedback
 	print "[+] Replacing URLs..."
 	print "[+] URLs that will be replaced:"
@@ -20,9 +20,9 @@ def replaceURL(OUTPUT):
 			for link in soup.findAll('a', href=True):
 				link['href'] = '{{links.generic}}'
 			for link in soup.findAll('link', href=True):
-				link['href'] = urlparse.urljoin(strURL, link['href'])
+				link['href'] = urlparse.urljoin(URL, link['href'])
 			for link in soup.findAll('script', src=True):
-				link['src'] = urlparse.urljoin(strURL, link['src'])
+				link['src'] = urlparse.urljoin(URL, link['src'])
 			source = str(soup.prettify(encoding='utf-8'))
 			#Write the updated URLs to the output file while removing the [' and ']
 			output = open(OUTPUT, "w")
@@ -33,7 +33,7 @@ def replaceURL(OUTPUT):
 		print "[-] URL parsing failed. Make sure the html file exists and is readable."
 
 #This is Step 2 - Images are found, downloaded, encoded in Base64, and embedded in the output file
-def fixImageURL(strURL,OUTPUT):
+def fixImageURL(URL,OUTPUT):
 	#Provide user feedback
 	print "[+] Finding IMG tags with src=/... for replacement."
 	print "[+] RegEx matches:"
@@ -41,13 +41,13 @@ def fixImageURL(strURL,OUTPUT):
 	try:
 		#Print img src URLs that will be modified and provide info
 		print "\n".join(re.findall('src="(.*?)"', open(OUTPUT).read()))
-		print "[+] Fixing src with " + strURL + "..."
+		print "[+] Fixing src with " + URL + "..."
 		with open(OUTPUT, "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
 			#Find all <img> with src attribute and create a full URL to download and embed image(s)
 			for img in soup.findAll('img'):
-				imgurl = urlparse.urljoin(strURL, img['src'])
+				imgurl = urlparse.urljoin(URL, img['src'])
 				image = urllib.urlopen(imgurl)
 				#Encode in Base64 and embed
 				img_64 = base64.b64encode(image.read())

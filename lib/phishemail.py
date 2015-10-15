@@ -46,7 +46,7 @@ def replaceURL(OUTPUT):
 		print "[-] URL parsing failed. Make sure the html file exists and is readable."
 
 #This is Step 3 - Images are found, downloaded, encoded in Base64, and embedded in output file
-def fixImageURL(strURL,OUTPUT):
+def fixImageURL(URL,OUTPUT):
 	#Provide user feedback
 	print "[+] Finding IMG tags with src=/... for replacement."
 	print "[+] RegEx matches:"
@@ -54,13 +54,13 @@ def fixImageURL(strURL,OUTPUT):
 	try:
 		#Print img src URLs that will be modified and provide info
 		print "\n".join(re.findall('src="(.*?)"', open(OUTPUT).read()))
-		print "[+] Fixing src with " + strURL + "..."
+		print "[+] Fixing src with " + URL + "..."
 		with open(OUTPUT, "r") as html:
 			#Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
 			#Find all <img> with src attribute and create a full URL to download and embed image(s)
 			for img in soup.findAll('img'):
-				imgurl = urlparse.urljoin(strURL, img['src'])
+				imgurl = urlparse.urljoin(URL, img['src'])
 				image = urllib.urlopen(imgurl)
 				#Encode in Base64 and embed
 				img_64 = base64.b64encode(image.read())

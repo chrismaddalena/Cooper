@@ -15,14 +15,14 @@ from optparse import OptionParser
 #Create options
 parser = OptionParser()
 parser.add_option("-o", "--output",  action="store", type="string", dest="output", help="Specifies the filename for the output HTML file. Default is output.html. Including the *.html extension is recommended.")
-parser.add_option("-p", "--phishgate",  action="store", type="string", dest="gate", help="Specifies the URL to use to create phishgate")
-parser.add_option("-e", "--email",  action="store", type="string", dest="email", help="Specifies the file to use to create phishing email template")
-parser.add_option("-u", "--url",  action="store", type="string", dest="url", help="Specifies the root URL for images in the target email or webpage")
-parser.add_option("-x", "--exit",  action="store", type="string", dest="exit", help="Specifies the URL to use to create an exit template")
+parser.add_option("-e", "--email",  action="store", type="string", dest="email", help="Specifies the HTML file to use to create a phishing email template")
 parser.add_option("-d", "--decode",  action="store", type="string", dest="decode", help="Tells Cooper to decode email source (accepts base64 and quoted-printable)")
-parser.add_option("-s", "--serverport", action="store", type="int", dest="serverport", help="Use to start HTTP server after template is created")
+parser.add_option("-p", "--phishgate",  action="store", type="string", dest="gate", help="Specifies the URL to use to create a phishgate template")
+parser.add_option("-x", "--exit",  action="store", type="string", dest="exit", help="Specifies the URL to use to create an exit template")
+parser.add_option("-u", "--url",  action="store", type="string", dest="url", help="Specifies the root URL for images in the target email or webpage")
+parser.add_option("-s", "--serverport", action="store", type="int", dest="serverport", help="Use to start an HTTP server to serve up output files")
 parser.add_option("-n", "--encode", action="store", type="string", dest="encode", help="Use to encode an image in Base64 for embedding -- recommend using with > output.txt")
-parser.add_option("-c", "--collect",  action="store", type="string", dest="collect", help="Specifies the URL to use to create an output file file without any changes.")
+parser.add_option("-c", "--collect",  action="store", type="string", dest="collect", help="Pass a URL to create an output file with unchanged page source")
 (menu, args) = parser.parse_args()
 
 #Default filename for the output files
@@ -34,21 +34,6 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 	if menu.output:
 		OUTPUT = menu.output
 		print "[+] Output file will be " + OUTPUT
-
-	#If phishgate is selected
-	if menu.gate:
-		print "[+] Processing phishgate request..."
-		URL = menu.gate
-		toolbox.collectSource(URL,OUTPUT)
-		phishgate.replaceURL(URL,OUTPUT)
-		phishgate.fixForms(OUTPUT)
-		if menu.url:
-			URL = menu.url
-			phishgate.fixImageURL(URL,OUTPUT)
-		else:
-			print "[!] No URL provided, so images will not be processed."
-		#Insert this URL last to avoid fixImageURL() & replaceURL() replacing the JS link
-		phishgate.insertPwdEval(OUTPUT)
 
 	#If email is selected
 	if menu.email:
@@ -66,15 +51,29 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 			print "[!] No URL provided, so images will not be processed."
 		phishemail.addTracking(OUTPUT)
 
+	#If phishgate is selected
+	if menu.gate:
+		print "[+] Processing phishgate request..."
+		URL = menu.gate
+		toolbox.collectSource(URL,OUTPUT)
+		phishgate.replaceURL(URL,OUTPUT)
+		phishgate.fixForms(OUTPUT)
+		if menu.url:
+			URL = menu.url
+			phishgate.fixImageURL(URL,OUTPUT)
+		else:
+			print "[!] No URL provided, so images will not be processed."
+		#Insert this URL last to avoid fixImageURL() & replaceURL() replacing the JS link
+		phishgate.insertPwdEval(OUTPUT)
+
 	#If exit template is selected
 	if menu.exit:
 		print "[+] Processing exit template request..."
 		URL = menu.exit
 		toolbox.collectSource(URL,OUTPUT)
-		phishexit.replaceURL(OUTPUT)
 		if menu.url:
 			URL = menu.url
-			phishexit.fixImageURL(URL,OUTPUT)
+			phishgate.fixImageURL(URL,OUTPUT)
 		else:
 			print "[!] No URL provided, so images will not be processed."
 
