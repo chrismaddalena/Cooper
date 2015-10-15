@@ -19,7 +19,7 @@ def collectSource(URL,OUTPUT):
 	try:
 		page = requests.get(URL) #Uses requests to open webpage
 		source = page.text #Get the page source
-		sourceFile = codecs.open(OUTPUT, "w", encoding=encoding) #Use codecs to create open file with utf-8 encoding
+		sourceFile = codecs.open(OUTPUT, "w", encoding=encoding) #Use codecs to create open file with specified encoding
 		sourceFile.write(source)
 		sourceFile.close()
 		print "[+] Succesfully collected source from: " + URL
@@ -29,7 +29,7 @@ def collectSource(URL,OUTPUT):
 		sys.exit(0)
 
 #Takes a txt or html file, ingests contents, and dumps it into a output file file for modification
-#Original file is preserved and new output file file is created with utf-8 encoding to avoid encoding issues later
+#Original file is preserved and new output file file is created with specified encoding to avoid encoding issues later
 def openSource(FILE,OUTPUT):
 	print "[+] Opening source HTML file: " + FILE
 	try:
@@ -42,8 +42,34 @@ def openSource(FILE,OUTPUT):
 		print "[-] Could not read the email source."
 		sys.exit(0)
 
-#Images are found, downloaded, encoded in Base64, and embedded in output file
+#Images are found and the source URLs are updated
 def fixImageURL(URL,OUTPUT):
+	#Provide user feedback
+	print "[+] Finding IMG tags with src=/... for replacement:"
+	#Open output file, read lines, and begin parsing to replace all incomplete img src URLs
+	try:
+		#Print img src URLs that will be modified and provide info
+		print "\n".join(re.findall('src="(.*?)"', open(OUTPUT).read()))
+		print "[+] Fixing src attribute with " + URL + "..."
+		with open(OUTPUT, "r") as html:
+			#Read in the source html and parse with BeautifulSoup
+			soup = BeautifulSoup(html)
+			#Find all <img> with src attribute and create a full URL to download and embed image(s)
+			for img in soup.findAll('img'):
+				imgurl = urlparse.urljoin(URL, img['src'])
+				img['src'] = imgurl
+			source = str(soup.prettify(encoding=encoding))
+			#Write the updated addresses to output file while removing the [' and ']
+			output = open(OUTPUT, "w")
+			output.write(source.replace('[','').replace(']',''))
+			output.close()
+			print "[+] IMG parsing successful. All IMG src's fixed."
+	except:
+		#Exception may occur if file doesn't exist or can't be read/written to
+		print "[-] IMG parsing failed. Some images may not have URLs (ex: src = cid:image001.jpg@01CEAD4C.047C2E50)."
+
+#Images are found, downloaded, encoded in Base64, and embedded in output file
+def fixImageEncode(URL,OUTPUT):
 	#Provide user feedback
 	print "[+] Finding IMG tags with src=/... for replacement:"
 	#Open output file, read lines, and begin parsing to replace all incomplete img src URLs
@@ -61,7 +87,7 @@ def fixImageURL(URL,OUTPUT):
 				#Encode in Base64 and embed
 				img_64 = base64.b64encode(image.read())
 				img['src'] = "data:image/png;base64," + img_64
-			source = str(soup.prettify(encoding='utf-8'))
+			source = str(soup.prettify(encoding=encoding))
 			#Write the updated addresses to output file while removing the [' and ']
 			output = open(OUTPUT, "w")
 			output.write(source.replace('[','').replace(']',''))

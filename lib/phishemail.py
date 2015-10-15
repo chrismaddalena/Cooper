@@ -4,6 +4,8 @@ import urlparse #For joining URLs for <img> tags
 import base64 #For encoding and embedding images
 import quopri #Adds support for decoding quoted-printable text
 
+encoding = 'utf-8'
+
 #This is Step 1 - Determine encoding and decode if necessary
 def decodeEmailText(ENCODING,OUTPUT):
 	with open(OUTPUT, "r") as html:
@@ -35,7 +37,7 @@ def replaceURL(OUTPUT):
 			#Find all <a href... and replace URLs with our new text/URL
 			for link in soup.findAll('a', href=True):
 				link['href'] = '{{links.generic}}'
-			source = str(soup.prettify(encoding='utf-8'))
+			source = str(soup.prettify(encoding=encoding))
 			#Write the updated URLs to output file while removing the [' and ']
 			output = open(OUTPUT, "w")
 			output.write(source.replace('[','').replace(']',''))
@@ -58,7 +60,7 @@ def addTracking(OUTPUT):
 			tracked = source[:index] + strTracking + source[index:]
 			soup = BeautifulSoup(tracked.replace('[','').replace(']',''))
 			output = open(OUTPUT, "w")
-			output.write(soup.prettify(encoding='utf-8'))
+			output.write(soup.prettify(encoding=encoding))
 			output.close()
 			print "[+] Tracking has been inserted."
 	except:

