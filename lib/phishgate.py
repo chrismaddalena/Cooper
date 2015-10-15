@@ -1,8 +1,6 @@
 import re #Used for RegEx
 from BeautifulSoup import BeautifulSoup #For parsing HTML
-import urlparse #For joining URLs for <img> tags
-import base64 #For encoding and embedding images
-import urllib #For opening image URLs
+import urlparse #For joining URLs, required for <a>, <link>, and <script> tags
 
 #This is Step 1 - URLs are replaced with our phishing URLs and new text is saved to output file
 def replaceURL(URL,OUTPUT):

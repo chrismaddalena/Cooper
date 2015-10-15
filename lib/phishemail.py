@@ -2,7 +2,6 @@ import re #Used for RegEx
 from BeautifulSoup import BeautifulSoup #For parsing HTML
 import urlparse #For joining URLs for <img> tags
 import base64 #For encoding and embedding images
-import urllib #For opening image URLs
 import quopri #Adds support for decoding quoted-printable text
 
 #This is Step 1 - Determine encoding and decode if necessary
