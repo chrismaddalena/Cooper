@@ -7,6 +7,8 @@ The script will clone a website and automatically process the html to prepare it
 for use in a phishing campaign.
 '''
 import sys
+import os
+import time
 #Using init file and we'll import all modules from the lib dir.
 #This cleans up some code lines.
 from lib import *
@@ -31,6 +33,35 @@ OUTPUT = "index.html"
 
 #Does the user want images to be encoded/embedded? True or False
 EMBED = menu.embed
+
+try:
+    os.system('cls')
+except Exception:
+    os.system('clear')
+time.sleep(1)
+
+print "Welcome to Cooper!"
+print ("""\
+
+      CCC
+     C
+     C    ooo ooo ppp  eee rrr
+     C    o o o o p  p e e r
+      CCC ooo ooo ppp  ee r
+                  p
+                  p          _
+                             |
+    o   o                  ^ |
+                  /^^^^^7  L_/
+    '  '     ,oO))))))))Oo,
+           ,'))))))))))))))), /{
+      '  ,'o  ))))))))))))))))={
+         >    ))))))))))))))))={
+         `,   ))))))\ \)))))))={
+           ',))))))))\/)))))' \{
+             '*O))))))))O*'
+
+""")
 
 #Process script options
 if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
@@ -64,17 +95,16 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 		URL = menu.gate
 		toolbox.collectSource(URL,OUTPUT)
 		phishgate.replaceURL(URL,OUTPUT)
-		phishgate.fixForms(OUTPUT)
-		if menu.url:
-			URL = menu.url
-			if menu.embed == True:
-				toolbox.fixImageEncode(URL,OUTPUT)
-			else:
-				toolbox.fixImageURL(URL,OUTPUT)
-		else:
-			print "[!] No URL provided, so images will not be processed."
+		#phishgate.fixForms(OUTPUT)
+		#if menu.url:
+		#	if menu.embed == True:
+		#		toolbox.fixImageEncode(URL,OUTPUT)
+		#	else:
+		#		toolbox.fixImageURL(URL,OUTPUT)
+		#else:
+		#	print "[!] No URL provided, so images will not be processed."
 		#Insert this URL last to avoid fixImageURL() & replaceURL() replacing the JS link
-		phishgate.insertPwdEval(OUTPUT)
+		#phishgate.insertPwdEval(OUTPUT)
 
 	#If exit template is selected
 	if menu.exit:

@@ -10,22 +10,41 @@ import base64 #For encoding images in base64
 import re #Used for RegEx
 import urlparse #For joining URLs for <img> tags
 import urllib #For opening image URLs
+import urllib2
+import subprocess
+import time
 
 encoding = 'utf-8'
+user_agent = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)"
 
 #Takes a URL, scrapes that webpage, and saves source to output file
 def collectSource(URL,OUTPUT):
 	print "[+] Collecting HTML source from: " + URL
 	try:
-		page = requests.get(URL) #Uses requests to open webpage
-		source = page.text #Get the page source
-		sourceFile = codecs.open(OUTPUT, "w", encoding=encoding) #Use codecs to create open file with specified encoding
-		sourceFile.write(source)
-		sourceFile.close()
+		#Spawn a detachced process to check for wget on the system
+		#Detached process removes the wget test call results appearing in the terminal
+		detached_process = 0x00000008
+		wget = subprocess.call('wget', shell=True, creationflags=detached_process)
+		if wget == 1:
+			#Same command used by SET's, but without -k, convert links
+			cmd = 'wget --no-check-certificate -O ' + OUTPUT + ' -c -U \"' + URL + '" "' + URL + '"'
+			subprocess.Popen(cmd, shell=True).wait()
+			time.sleep(3)
+		else:
+			#page = requests.get(URL) #Uses requests to open webpage
+			#source = page.text #Get the page source
+			headers = { 'User-Agent' : user_agent }
+			page = urllib2.Request(URL, None, headers)
+			source = urllib2.urlopen(page).read()
+			#sourceFile = codecs.open(OUTPUT, "w", encoding=encoding) #Use codecs to create open file with specified encoding
+			sourceFile = file(OUTPUT, "w")
+			sourceFile.write(source)
+			sourceFile.close()
 		print "[+] Succesfully collected source from: " + URL
-	except:
+	except Exception, err:
 		#If scraping fails, all is lost and we can only exit
 		print "[-] Check URL - Must be valid and a fully quaified URL (ex: http://www.foo.bar)."
+		sys.stderr.write('Error: %sn' % str(err))
 		sys.exit(0)
 
 #Takes a txt or html file, ingests contents, and dumps it into a output file file for modification
@@ -38,8 +57,9 @@ def openSource(FILE,OUTPUT):
 		sourceFile = open(OUTPUT, "w")
 		sourceFile.write(source)
 		sourceFile.close()
-	except:
+	except Exception, err:
 		print "[-] Could not read the email source."
+		sys.stderr.write('Error: %sn' % str(err))
 		sys.exit(0)
 
 #Images are found and the source URLs are updated
@@ -64,9 +84,10 @@ def fixImageURL(URL,OUTPUT):
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print "[+] IMG parsing successful. All IMG src's fixed."
-	except:
+	except Exception, err:
 		#Exception may occur if file doesn't exist or can't be read/written to
 		print "[-] IMG parsing failed. Some images may not have URLs (ex: src = cid:image001.jpg@01CEAD4C.047C2E50)."
+		sys.stderr.write('Error: %sn' % str(err))
 
 #Images are found, downloaded, encoded in Base64, and embedded in output file
 def fixImageEncode(URL,OUTPUT):
@@ -93,9 +114,10 @@ def fixImageEncode(URL,OUTPUT):
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print "[+] IMG parsing successful. All IMG src's fixed."
-	except:
+	except Exception, err:
 		#Exception may occur if file doesn't exist or can't be read/written to
 		print "[-] IMG parsing failed. Some images may not have URLs (ex: src = cid:image001.jpg@01CEAD4C.047C2E50)."
+		sys.stderr.write('Error: %sn' % str(err))
 
 #Takes a port number and starts a server at 127.0.0.1:PORT to view final files
 def startHTTPServer(PORT):
@@ -106,8 +128,9 @@ def startHTTPServer(PORT):
 		print "[+] Server started. Browse to 127.0.0.1:",PORT
 		print "[!] Use CTRL+C to kill the web server."
 		httpd.serve_forever()
-	except:
+	except Exception, err:
 		print "[-] Server stopped or could not be started. Please try a different port."
+		sys.stderr.write('Error: %sn' % str(err))
 
 #Takes an image file, encodes it in Base64, and prints encoded output for embedding in a template
 def encodeImage(IMAGE):

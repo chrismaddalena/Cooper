@@ -23,7 +23,9 @@ def replaceURL(URL,OUTPUT):
 				link['href'] = urlparse.urljoin(URL, link['href'])
 			for link in soup.findAll('script', src=True):
 				link['src'] = urlparse.urljoin(URL, link['src'])
-			source = str(soup.prettify(encoding=encoding))
+			#source = str(soup.prettify(encoding=encoding))
+			source = soup.str(encoding='latin1')
+
 			#Write the updated URLs to output file while removing the [' and ']
 			output = open(OUTPUT, "w")
 			output.write(source.replace('[','').replace(']',''))
