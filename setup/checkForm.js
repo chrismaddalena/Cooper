@@ -1,6 +1,6 @@
 function checkForm(form)
 {
-  var results = ["Password stats"];
+  var results = ["Password stats:"];
   var pass = form.pwd.value;
   var user = form.username.value;
   var isUsernameInPass = pass.indexOf(user);
