@@ -9,12 +9,12 @@ for use in a phishing campaign.
 import sys
 import os
 import time
-#Using init file and we'll import all modules from the lib dir.
-#This cleans up some code lines.
+# Using init file and we'll import all modules from the lib dir.
+# This cleans up some code lines.
 from lib import *
 from optparse import OptionParser
 
-#Create options
+# Create options menu
 parser = OptionParser()
 parser.add_option("-o", "--output",  action="store", type="string", dest="output", help="Specifies the filename for the output HTML file. Default is output.html. Including the *.html extension is recommended.")
 parser.add_option("-e", "--email",  action="store", type="string", dest="email", help="Specifies the HTML file to use to create a phishing email template")
@@ -28,10 +28,10 @@ parser.add_option("-n", "--encode", action="store", type="string", dest="encode"
 parser.add_option("-c", "--collect",  action="store", type="string", dest="collect", help="Pass a URL to create an output file with unchanged page source")
 (menu, args) = parser.parse_args()
 
-#Default filename for the output files
+# Default filename for the output files
 OUTPUT = "index.html"
 
-#Does the user want images to be encoded/embedded? True or False
+# Does the user want images to be encoded/embedded? True or False
 EMBED = menu.embed
 
 try:
@@ -63,14 +63,14 @@ print ("""\
 
 """)
 
-#Process script options
+# Process script options
 if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
-	#If an output name is specified
+	# If an output name is specified
 	if menu.output:
 		OUTPUT = menu.output
 		print "[+] Output file will be: " + OUTPUT
 
-	#If email is selected
+	# If email is selected
 	if menu.email:
 		print "[+] Processing phishing email request..."
 		FILE = menu.email
@@ -89,21 +89,22 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 			print "[!] No URL provided, so images will not be processed."
 		phishemail.addTracking(OUTPUT)
 
-	#If phishgate is selected
+	# If phishgate is selected
 	if menu.gate:
 		print "[+] Processing phishgate request..."
 		URL = menu.gate
 		toolbox.collectSource(URL,OUTPUT)
 		phishgate.replaceURL(URL,OUTPUT)
-		#phishgate.fixForms(OUTPUT)
-		#if menu.url:
-		#	if menu.embed == True:
-		#		toolbox.fixImageEncode(URL,OUTPUT)
-		#	else:
-		#		toolbox.fixImageURL(URL,OUTPUT)
-		#else:
-		#	print "[!] No URL provided, so images will not be processed."
-		#Insert this URL last to avoid fixImageURL() & replaceURL() replacing the JS link
+		phishgate.fixForms(OUTPUT)
+		if menu.url:
+			if menu.embed == True:
+				toolbox.fixImageEncode(URL,OUTPUT)
+			else:
+				toolbox.fixImageURL(URL,OUTPUT)
+		else:
+			print "[!] No URL provided, so images will not be processed."
+		# Insert this URL last to avoid fixImageURL() & replaceURL() replacing the JS link
+        # Uncomment the line below if you have set a URL for the JavaScript file
 		#phishgate.insertPwdEval(OUTPUT)
 
 	#If exit template is selected
@@ -120,11 +121,11 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 		else:
 			print "[!] No URL provided, so images will not be processed."
 
-	#If image encoding is enabled
+	# If image encoding is enabled
 	if menu.encode:
 		toolbox.encodeImage(menu.encode)
 
-	#If page source collection is selected
+	# If page source collection is selected
 	if menu.collect:
 		print "[+] Collecting source and exiting..."
 		URL = menu.collect
@@ -138,11 +139,11 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 		else:
 			print "[!] No URL provided, so images will not be processed."
 
-	#If the user requests the HTTP server to be started
+	# If the user requests the HTTP server to be started
 	if menu.serverport:
 		PORT = menu.serverport
 		print "[+] Starting HTTP server on port", PORT
 		toolbox.startHTTPServer(PORT)
 else:
-	#Print help if -h is used or an invalid combination of options/input is used
+	# Print help if -h is used or an invalid combination of options/input is used
 	parser.print_help()
