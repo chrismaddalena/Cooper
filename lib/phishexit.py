@@ -18,7 +18,7 @@ def replaceURL(URL,OUTPUT):
 			soup = BeautifulSoup(html)
 			# Find all links and replace URLs with our new text/URL
 			for link in soup.findAll('a', href=True):
-				link['href'] = '{{links.generic}}'
+				link['href'] = '{{links.phishgate}}'
 			for link in soup.findAll('link', href=True):
 				link['href'] = urlparse.urljoin(URL, link['href'])
 			for link in soup.findAll('script', src=True):
