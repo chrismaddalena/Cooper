@@ -105,7 +105,7 @@ def fixImageEncode(URL,OUTPUT):
 				image = urllib2.urlopen(imgurl)
 				# Encode in Base64 and embed
 				img_64 = base64.b64encode(image.read())
-				img['src'] = "data:image/png;base64," + img_64
+				img['src'] = "data:image/png;base64,%s" % img_64
 			source = soup.prettify()
 			source = xml.sax.saxutils.unescape(source)
 			# Write the updated addresses to output file while removing the [' and ']
@@ -137,6 +137,6 @@ def encodeImage(IMAGE):
 	#Encode in Base64 and print encoded string for copying
 	with open(IMAGE, "rb") as image:
 		print "[+] Image has been encoded. Copy this string:\n"
-		img_64 = "data:image/png;base64," + base64.b64encode(image.read())
+		img_64 = '<img src="data:image/png;base64,%s">' % base64.b64encode(image.read())
 		print img_64 + "\n"
 		print "[+] End of encoded string."
