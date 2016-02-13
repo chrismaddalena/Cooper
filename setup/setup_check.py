@@ -4,19 +4,13 @@
 import os
 from time import sleep
 
-print "\nCooper requires various lib/modules to properly work."
-print "This script serves to check if you have those libs."
+print("\nCooper requires various lib/modules to properly work.")
+print("This script serves to check if you have those libs.")
 
 sleep(2)
 
 try:
-    import BeautifulSoup
-    print '[+]FOUND: BeautifulSoup'
+    from bs4 import BeautifulSoup
+    print('[+]FOUND: BeautifulSoup4')
 except:
-    print '[+]MISSING: BeautifulSoup'
-
-try:
-    import requests
-    print '[+]FOUND: requests'
-except:
-    print '[+]MISSING: requests'
+    print('[+]MISSING: BeautifulSoup4')

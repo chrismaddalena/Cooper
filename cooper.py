@@ -40,7 +40,7 @@ except Exception:
     os.system('clear')
 time.sleep(1)
 
-print "Welcome to Cooper!"
+print("Welcome to Cooper!")
 print ("""\
 
       CCC
@@ -68,11 +68,11 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 	# If an output name is specified
 	if menu.output:
 		OUTPUT = menu.output
-		print "[+] Output file will be: " + OUTPUT
+		print("[+] Output file will be: " + OUTPUT)
 
 	# If email is selected
 	if menu.email:
-		print "[+] Processing phishing email request..."
+		print("[+] Processing phishing email request...")
 		FILE = menu.email
 		toolbox.openSource(FILE,OUTPUT)
 		if menu.decode:
@@ -86,12 +86,12 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 			else:
 				toolbox.fixImageURL(URL,OUTPUT)
 		else:
-			print "[!] No URL provided, so images will not be processed."
+			print("[!] No URL provided, so images will not be processed.")
 		phishemail.addTracking(OUTPUT)
 
 	# If phishgate is selected
 	if menu.gate:
-		print "[+] Processing phishgate request..."
+		print("[+] Processing phishgate request...")
 		URL = menu.gate
 		toolbox.collectSource(URL,OUTPUT)
 		phishgate.replaceURL(URL,OUTPUT)
@@ -102,14 +102,14 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 			else:
 				toolbox.fixImageURL(URL,OUTPUT)
 		else:
-			print "[!] No URL provided, so images will not be processed."
+			print("[!] No URL provided, so images will not be processed.")
 		# Insert this URL last to avoid fixImageURL() & replaceURL() replacing the JS link
         # Uncomment the line below if you have set a URL for the JavaScript file
 		#phishgate.insertPwdEval(OUTPUT)
 
 	#If exit template is selected
 	if menu.exit:
-		print "[+] Processing exit template request..."
+		print("[+] Processing exit template request...")
 		URL = menu.exit
 		toolbox.collectSource(URL,OUTPUT)
 		if menu.url:
@@ -119,7 +119,7 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 			else:
 				toolbox.fixImageURL(URL,OUTPUT)
 		else:
-			print "[!] No URL provided, so images will not be processed."
+			print("[!] No URL provided, so images will not be processed.")
 
 	# If image encoding is enabled
 	if menu.encode:
@@ -127,7 +127,7 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 
 	# If page source collection is selected
 	if menu.collect:
-		print "[+] Collecting source and exiting..."
+		print("[+] Collecting source and exiting...")
 		URL = menu.collect
 		toolbox.collectSource(URL,OUTPUT)
 		if menu.url:
@@ -137,12 +137,12 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 			else:
 				toolbox.fixImageURL(URL,OUTPUT)
 		else:
-			print "[!] No URL provided, so images will not be processed."
+			print("[!] No URL provided, so images will not be processed.")
 
 	# If the user requests the HTTP server to be started
 	if menu.serverport:
 		PORT = menu.serverport
-		print "[+] Starting HTTP server on port", PORT
+		print("[+] Starting HTTP server on port", PORT)
 		toolbox.startHTTPServer(PORT)
 else:
 	# Print help if -h is used or an invalid combination of options/input is used
