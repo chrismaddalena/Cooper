@@ -13,7 +13,7 @@ def replaceURL(URL,OUTPUT):
 	try:
 		# Print href URLs that will be replaced
 		print("\n".join(re.findall('<a href="?\'?([^"\'>]*)', open(OUTPUT).read())))
-		with open(OUTPUT, "r") as html:
+		with open(OUTPUT, 'r') as html:
 			# Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
 			# Find all links and replace URLs with our new text/URL
@@ -26,7 +26,7 @@ def replaceURL(URL,OUTPUT):
 			source = soup.prettify()
 			source = xml.sax.saxutils.unescape(source)
 			# Write the updated URLs to the output file while removing the [' and ']
-			output = open(OUTPUT, "w")
+			output = open(OUTPUT, 'r')
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print("[+] URL parsing successful. URLs replaced.")
@@ -43,7 +43,7 @@ def fixImageURL(URL,OUTPUT):
 		# Print img src URLs that will be modified and provide info
 		print("\n".join(re.findall('src="(.*?)"', open(OUTPUT).read())))
 		print("[+] Fixing src with " + URL + "...")
-		with open(OUTPUT, "r") as html:
+		with open(OUTPUT, 'r') as html:
 			# Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
 			# Find all <img> with src attribute and create a full URL to download and embed image(s)
@@ -56,7 +56,7 @@ def fixImageURL(URL,OUTPUT):
 			source = soup.prettify()
 			source = xml.sax.saxutils.unescape(source)
 			# Write the updated addresses to the output file while removing the [' and ']
-			output = open(OUTPUT, "w")
+			output = open(OUTPUT, 'w')
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print("[+] IMG parsing successful. IMG src's fixed.")
