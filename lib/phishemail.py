@@ -7,7 +7,7 @@ import xml.sax.saxutils # For unescaping ;lt ;gt ;amp
 
 # This is Step 1 - Determine encoding and decode if necessary
 def decodeEmailText(ENCODING,OUTPUT):
-	with open(OUTPUT, "r") as html:
+	with open(OUTPUT, 'r') as html:
 		encoded = html.read()
 		if ENCODING in ['quoted-printable', 'qp', 'q-p']:
 			print("[+] Decoding quoted-printable text.")
@@ -15,11 +15,11 @@ def decodeEmailText(ENCODING,OUTPUT):
 			source = quopri.decodestring(encoded)
 		if ENCODING in ['base64', 'Base64', 'b64', 'B64']:
 			print("[+] Decoding Base64 text.")
+			print("[!] WARNING: If the output is a mess, double check your input file to make sure only the Base64 text is in the file.")
 			# Decode the Base64 text
 			source = base64.b64decode(encoded)
-		output = open(OUTPUT, "w")
-		output.write(source)
-		output.close()
+		with open(OUTPUT, 'w') as output:
+			output.write(source)
 
 # This is Step 2 - URLs are replaced with our phishing URLs and new text is saved to output file
 def replaceURL(OUTPUT):
@@ -30,7 +30,7 @@ def replaceURL(OUTPUT):
 	try:
 		# Print href URLs that will be replaced
 		print("\n".join(re.findall('<a href="?\'?([^"\'>]*)', open(OUTPUT).read())))
-		with open(OUTPUT, "r") as html:
+		with open(OUTPUT, 'r') as html:
 			# Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html,"html.parser")
 			# Find all <a href... and replace URLs with our new text/URL
@@ -39,7 +39,7 @@ def replaceURL(OUTPUT):
 			source = soup.prettify()
 			source = xml.sax.saxutils.unescape(source)
 			# Write the updated URLs to output file while removing the [' and ']
-			output = open(OUTPUT, "w")
+			output = open(OUTPUT, 'w')
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print("[+] URL parsing successful. All URLs have been replaced.")
@@ -52,7 +52,7 @@ def addTracking(OUTPUT):
 	strTracking = '<img src="{{links.tracking}}" style="width:1px; height:1px;"/>'
 	print("[+] Inserting the tracking image.")
 	try:
-		with open(OUTPUT, "r") as html:
+		with open(OUTPUT, 'r') as html:
 			# Read in the source html and parse with BeautifulSoup
 			source = html.read()
 			index = source.find(r"</body")
@@ -61,7 +61,7 @@ def addTracking(OUTPUT):
 			soup = BeautifulSoup(tracked.replace('[','').replace(']',''))
 			source = soup.prettify()
 			source = xml.sax.saxutils.unescape(source)
-			output = open(OUTPUT, "w")
+			output = open(OUTPUT, 'w')
 			output.write(source)
 			output.close()
 			print("[+] Tracking has been inserted.")

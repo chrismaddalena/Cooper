@@ -34,7 +34,7 @@ def collectSource(URL,OUTPUT):
 			headers = { 'User-Agent' : user_agent }
 			page = urllib.request.Request(URL, None, headers)
 			source = urllib.request.urlopen(page).read()
-			sourceFile = open(OUTPUT, "wb")
+			sourceFile = open(OUTPUT, 'wb')
 			sourceFile.write(source)
 			sourceFile.close()
 		print("[+] Succesfully collected source from: " + URL)
@@ -48,11 +48,10 @@ def collectSource(URL,OUTPUT):
 def openSource(FILE,OUTPUT):
 	print("[+] Opening source HTML file: " + FILE)
 	try:
-		inputFile = open(FILE, "r")
-		source = inputFile.read()
-		sourceFile = open(OUTPUT, "w")
-		sourceFile.write(source)
-		sourceFile.close()
+		with open(FILE, 'r') as inputFile:
+			source = inputFile.read()
+		with open(OUTPUT, 'w') as sourceFile:
+			sourceFile.write(source)
 	except Exception as err:
 		print("[-] Could not read the email source.")
 		sys.stderr.write('Error: %sn' % str(err))
@@ -67,7 +66,7 @@ def fixImageURL(URL,OUTPUT):
 		# Print img src URLs that will be modified and provide info
 		print("\n".join(re.findall('src="(.*?)"', open(OUTPUT).read())))
 		print("[+] Fixing src attribute with " + URL + "...")
-		with open(OUTPUT, "r") as html:
+		with open(OUTPUT, 'r') as html:
 			# Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html,"html.parser")
 			# Find all <img> with src attribute and create a full URL to download and embed image(s)
@@ -77,7 +76,7 @@ def fixImageURL(URL,OUTPUT):
 			source = soup.prettify()
 			source = xml.sax.saxutils.unescape(source)
 			# Write the updated addresses to output file while removing the [' and ']
-			output = open(OUTPUT, "w")
+			output = open(OUTPUT, 'w')
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print("[+] IMG parsing successful. All IMG src's fixed.")
@@ -96,7 +95,7 @@ def fixImageEncode(URL,OUTPUT):
 		# Print img src URLs that will be modified and provide info
 		print("\n".join(re.findall('src="(.*?)"', open(OUTPUT).read())))
 		print("[+] Fixing src attribute with " + URL + "...")
-		with open(OUTPUT, "r") as html:
+		with open(OUTPUT, 'r') as html:
 			# Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html)
 			# Find all <img> with src attribute and create a full URL to download and embed image(s)
@@ -109,7 +108,7 @@ def fixImageEncode(URL,OUTPUT):
 			source = soup.prettify()
 			source = xml.sax.saxutils.unescape(source)
 			# Write the updated addresses to output file while removing the [' and ']
-			output = open(OUTPUT, "w")
+			output = open(OUTPUT, 'w')
 			output.write(source.replace('[','').replace(']',''))
 			output.close()
 			print("[+] IMG parsing successful. All IMG src's fixed.")
@@ -135,7 +134,7 @@ def startHTTPServer(PORT):
 # Used with -n --encode and imae files
 def encodeImage(IMAGE):
 	#Encode in Base64 and print encoded string for copying
-	with open(IMAGE, "rb") as image:
+	with open(IMAGE, 'rb') as image:
 		print("[+] Image has been encoded. Copy this string:\n")
 		img_64 = '<img src="data:image/png;base64,%s">' % base64.b64encode(image.read())
 		print(img_64 + "\n")
