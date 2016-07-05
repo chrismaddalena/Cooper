@@ -18,21 +18,24 @@ def decodeEmailText(ENCODING,OUTPUT):
 			print("[!] WARNING: If the output is a mess, double check your input file to make sure only the Base64 text is in the file.")
 			# Decode the Base64 text
 			source = base64.b64decode(encoded)
-		with open(OUTPUT, 'w') as output:
+		with open(OUTPUT, 'wb') as output:
 			output.write(source)
 
 # This is Step 2 - URLs are replaced with our phishing URLs and new text is saved to output file
 def replaceURL(OUTPUT):
-	# Provide user feedback
-	print("[+] Replacing the URLs in the HTML source.")
-	print("[+] URLs that will be replaced:")
 	# Open output file, read lines, and begin parsing to replace all URLs inside <a> tags with href
 	try:
 		# Print href URLs that will be replaced
-		print("\n".join(re.findall('<a href="?\'?([^"\'>]*)', open(OUTPUT).read())))
-		with open(OUTPUT, 'r') as html:
+		with open(OUTPUT, 'rb') as html:
 			# Read in the source html and parse with BeautifulSoup
 			soup = BeautifulSoup(html,"html.parser")
+			# Provide user feedback so they can verify the URLs being replaced
+			results = re.findall('<a href="?\'?([^"\'>]*)', str(soup))
+			print("[+] These %s URLs that will be replaced in the HTML:" % len(results))
+			counter = 1
+			for result in results:
+				print("[%s] %s" % (counter, result))
+				counter += 1
 			# Find all <a href... and replace URLs with our new text/URL
 			for link in soup.findAll('a', href=True):
 				link['href'] = '{{links.generic}}'
@@ -50,21 +53,24 @@ def replaceURL(OUTPUT):
 def addTracking(OUTPUT):
 	# Define the tracking image that will be inserted
 	strTracking = '<img src="{{links.tracking}}" style="width:1px; height:1px;"/>'
-	print("[+] Inserting the tracking image.")
+	print("[+] Attempting to insert the tracking image.")
 	try:
 		with open(OUTPUT, 'r') as html:
 			# Read in the source html and parse with BeautifulSoup
 			source = html.read()
 			index = source.find(r"</body")
-			print("[+] Closing body tag found at index " + str(index))
-			tracked = source[:index] + strTracking + source[index:]
-			soup = BeautifulSoup(tracked.replace('[','').replace(']',''))
-			source = soup.prettify()
-			source = xml.sax.saxutils.unescape(source)
-			output = open(OUTPUT, 'w')
-			output.write(source)
-			output.close()
-			print("[+] Tracking has been inserted.")
+			if index == -1:
+				print("[!] Cooper could not find a closing body tag. There is probably an issue with the decoding or HTML! Tracking has not been inserted.")
+			else:
+				print("[+] Closing body tag found at index " + str(index))
+				tracked = source[:index] + strTracking + source[index:]
+				soup = BeautifulSoup(tracked.replace('[','').replace(']',''),"html.parser")
+				source = soup.prettify()
+				source = xml.sax.saxutils.unescape(source)
+				output = open(OUTPUT, 'w')
+				output.write(source)
+				output.close()
+				print("[+] Tracking has been inserted.")
 	except:
 		# Exception may occur if file doesn't exist or can't be read/written to
 		print("[-] Failed to insert tracking. Make sure the html file exists and is readable.")
