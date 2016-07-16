@@ -1,5 +1,5 @@
-#Toolbox contains simple tools that can be called when running Cooper
-#and common tools used by all modules.
+# Toolbox contains simple tools that can be called when running Cooper
+# and common tools used by all modules.
 import sys
 import os
 import socketserver
@@ -11,25 +11,23 @@ import re # Used for RegEx
 import urllib.parse # For joining URLs for <img> tags
 import urllib.request, urllib.error, urllib.parse # For collecting source
 import subprocess # For calling wget
-import time # Mostly for the option to sleep
 import xml.sax.saxutils # For unescaping ;lt ;gt ;amp
 
 # User-agent used for urllib
-user_agent = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)"
+user_agent = "(Mozilla/5.0 (Windows; U; Windows NT 6.0;en-US; rv:1.9.2) Gecko/20100115 Firefox/3.6"
 
 # Takes a URL, scrapes that webpage, and saves source to output file
 def collectSource(URL,OUTPUT):
 	print("[+] Collecting HTML source from: " + URL)
 	try:
-		# Spawn a detachced process to check for wget on the system
+		# Spawn a detached process to check for wget on the system
 		# Detached process removes the wget test call results appearing in the terminal
 		DNULL = open(os.devnull, 'w')
 		wget = subprocess.call('wget', shell=True, stdout=DNULL, stderr=subprocess.STDOUT)
-		if wget == 0:
+		if wget == 1:
 			# Same command used by SET's, but without -k, convert links
-			cmd = 'wget --no-check-certificate -O ' + OUTPUT + ' -c -U \"' + URL + '" "' + URL + '"'
+			cmd = 'wget --no-check-certificate -O %s -c -U "%s" "%s" --user-agent="%s"' % (OUTPUT,URL,URL, user_agent)
 			subprocess.Popen(cmd, shell=True).wait()
-			time.sleep(10)
 		else:
 			headers = { 'User-Agent' : user_agent }
 			page = urllib.request.Request(URL, None, headers)
@@ -41,7 +39,7 @@ def collectSource(URL,OUTPUT):
 	except Exception as err:
 		# If scraping fails, all is lost and we can only exit
 		print("[-] Check URL - Must be valid and a fully qualified URL (ex: http://www.foo.bar).")
-		sys.stderr.write('Error: %sn' % str(err))
+		sys.stderr.write('Error: %s\n' % str(err))
 		sys.exit(0)
 
 # Takes a txt or html file, ingests contents, and dumps it into a output file file for modification
@@ -97,14 +95,14 @@ def fixImageEncode(URL,OUTPUT):
 		print("[+] Fixing src attribute with " + URL + "...")
 		with open(OUTPUT, 'r') as html:
 			# Read in the source html and parse with BeautifulSoup
-			soup = BeautifulSoup(html)
+			soup = BeautifulSoup(html,"html.parser")
 			# Find all <img> with src attribute and create a full URL to download and embed image(s)
 			for img in soup.findAll('img'):
 				imgurl = urllib.parse.urljoin(URL, img['src'])
 				image = urllib.request.urlopen(imgurl)
 				# Encode in Base64 and embed
 				img_64 = base64.b64encode(image.read())
-				img['src'] = "data:image/png;base64,%s" % img_64
+				img['src'] = "data:image/png;base64,%s" % img_64.decode('ascii')
 			source = soup.prettify()
 			source = xml.sax.saxutils.unescape(source)
 			# Write the updated addresses to output file while removing the [' and ']
@@ -137,5 +135,5 @@ def encodeImage(IMAGE):
 	with open(IMAGE, 'rb') as image:
 		print("[+] Image has been encoded. Copy this string:\n")
 		img_64 = '<img src="data:image/png;base64,%s">' % base64.b64encode(image.read())
-		print(img_64 + "\n")
+		print(img_64.decode('ascii') + "\n")
 		print("[+] End of encoded string.")
