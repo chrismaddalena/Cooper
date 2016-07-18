@@ -1,5 +1,5 @@
-##Cooper [koo-per, koo p-er] - noun - a person who makes or repairs casks, barrels, etc.
-
+##Cooper - a person who makes or repairs casks, barrels, etc.
+(It's a "fish in a barrel" joke. I enjoy puns!)
 >A Python tool for ingesting HTML and producing HTML source suitable for phishing campaigns.
 
 Note: Cooper was designed to accommodate some specific, even unusual, needs. However, it should be easy to modify Cooper for other phishing tools and projects.
@@ -15,7 +15,7 @@ The main script. It may eventually offer a menu with more verbose information, s
 * -c for Collect - Use Cooper to collect the source of a webpage. Useful if you just want to quickly grab the source and have Cooper fix the images.
 
 **You can also use...**
-* -o for Output - Specify a filename for the output HTML file. If a name is not provided with -o, Cooper will use output.html.
+* -o for Output - Specify a filename for the output HTML file. If a name is not provided with -o, Cooper will use index.html.
 * -d for Decode - Indicate an email needs to be decoded and specify the encoding (base64 or quoted-printable).
 * -u for URL - Specify a URL you want Cooper to use when you need it to fix links for images, CSS, and/or scripts.
 * -m for eMbed - Set embedding to True. Images will be Base64 encoded and embedded into the template when this flag is used.
@@ -29,6 +29,8 @@ The main script. It may eventually offer a menu with more verbose information, s
 
 * phishgate.py - This module creates an HTML file suitable as a phishgate (a landing page for the phishing emails). Use -p and feed Cooper a URL for a webpage you want to use for phishing (probably some sort of form). Use -x to feed Cooper an exit page for your campaign (like a 404 page).
 
+* phishexit.py - This module creates an HTML file just like phishgate.py. There used to be a reason for this to exist. It is deprecated and no longer necessary. It will be removed.
+
 ###Usage examples:
 ####Creating an email:
 * Get the source of an email to clone and save it to a file.
@@ -38,6 +40,7 @@ The main script. It may eventually offer a menu with more verbose information, s
 ####Creating a phishgate:
 * Find a webpage to clone.
 * To clone a webpage and view it in your browser: cooper.py -p http://www.foo.bar -s 8888
+* Visit 127.0.0.1:8888
 
 ####Creating an exit page:
 * Find a URL that pulls up the 404 page of your cloned website.
@@ -51,7 +54,8 @@ The main script. It may eventually offer a menu with more verbose information, s
 * The HTTP server option is there to enable you to easily review Cooper's output by hitting 127.0.0.1:PORT. You could just open the HTML file, but that's not as neat.
 
 ###Known issues
-* If the website is hosted on a service like SquareSpace, Cooper will be unable to repair the images. The img tags look like "<img src="//static1.squarespace.com/static/52ebedcae4b0ad4aad060b4a/t/533b687ae4b01d79d0ae12a3/1437187699809/?format=1500w">.
+* If the website is hosted on a service like SquareSpace, Cooper will be unable to repair the images. The img tags look like: "\<img src="//static1.squarespace.com/static/52ebedcae4b0ad4aad060b4a/t/533b687ae4b01d79d0ae12a3/1437187699809/?format=1500w"\>.
+* Multi-part MIME messages are unsupported, for now. If you need to decode a Base64 and/or quoted-printable encoded email, then you will need to decode the quoted-printable text, remove additional Base64 encoded blocks and additional text, and then decode the Base64. In an upcoming release, Cooper will support multi-part messages so this is less of a hassle.
 
 ###Setup:
 **Find the setup files inside the setup directory.**
