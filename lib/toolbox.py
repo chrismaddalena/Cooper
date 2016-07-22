@@ -12,7 +12,7 @@ import urllib.parse # For joining URLs for <img> tags
 import xml.sax.saxutils # For unescaping ;lt ;gt ;amp
 import email # Used for parsing raw email content
 
-# User-agent used for urllib
+# User-agent used for requests
 user_agent = "(Mozilla/5.0 (Windows; U; Windows NT 6.0;en-US; rv:1.9.2) Gecko/20100115 Firefox/3.6"
 
 # Takes a URL, scrapes that webpage, and saves source to output file
@@ -28,21 +28,45 @@ def collectSource(URL,OUTPUT):
 		print("[+] Succesfully collected source from: {}".format(URL))
 	except Exception as err:
 		# If scraping fails, all is lost and we can only exit
-		print("[-] Check URL - Must be valid and a fully qualified URL (ex: http://www.foo.bar).")
+		print("[!] Check URL - Must be valid and a fully qualified URL (ex: http://www.foo.bar).")
 		sys.stderr.write("Error: {!s}\n".format(err))
 		sys.exit(0)
 
 # Takes a txt or html file (an email), ingests contents, and dumps it into a output file for modification
 def openEmail(FILE,OUTPUT):
-	print("[+] Opening source HTML file: {}".format(FILE))
+	print("[+] Opening source email file: {}".format(FILE))
 	with open(FILE, 'r') as inputFile:
-		b = email.message_from_string(inputFile.read())
-		if b.is_multipart():
+		e = email.message_from_string(inputFile.read())
+		if e.is_multipart():
 			print("[+] Processing multi-part email message.")
-			for payload in b.get_payload():
-				print("[+] Processing {} content...".format(payload.get_content_charset()))
-				with open(OUTPUT, 'wb') as sourceFile:
-					sourceFile.write(payload.get_payload(decode=True))
+			for payload in e.get_payload():
+				content_disposition = payload.get_content_disposition()
+				attachment = None
+				attachment = payload.get_filename()
+				if attachment is not None:
+					print("[+] Attachment detected and discarded: {}, {}".format(content_disposition,attachment))
+				else:
+					# Check for multipart/alternative sections with mutltiple alternatives for the email body
+					# TODO: May need to handle multipart/report, multipart/signed, and multipart/related
+					if payload.get_content_type() == "multipart/alternative":
+						for subpart in payload.get_payload():
+							try:
+								# Yes, this overwrites the file contents, but this should be good
+								# The last part in "alternative" content should be the most faithful to the original
+								with open(OUTPUT, 'wb') as sourceFile:
+									sourceFile.write(subpart.get_payload(decode=True))
+							except:
+								# Passing because this is here mostly to skip empty alternative messages, like:
+								#--001a114404b6455680053774c9b3
+								# Content-Type: multipart/alternative; boundary=001a114404b6455678053774c9b1
+								#
+								# --001a114404b6455678053774c9b1
+								pass
+					# Not multipart/alternative
+					else:
+						print("[+] Processing {} content...".format(payload.get_content_type()))
+						with open(OUTPUT, 'wb') as sourceFile:
+							sourceFile.write(payload.get_payload(decode=True))
 		else:
 			print("[+] Processing {} content...".format(payload.get_content_charset()))
 			with open(OUTPUT, 'wb') as sourceFile:

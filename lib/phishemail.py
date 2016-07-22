@@ -1,26 +1,7 @@
 import re # Used for RegEx
 from bs4 import BeautifulSoup # For parsing HTML
 import urllib.parse # For joining URLs for <img> tags
-#import base64 # For encoding and embedding images
-#import quopri # Adds support for decoding quoted-printable text
 import xml.sax.saxutils # For unescaping ;lt ;gt ;amp
-
-# DEPRECATED - TO BE REMOVED
-# This is Step 1 - Determine encoding and decode if necessary
-# def decodeEmailText(ENCODING,OUTPUT):
-# 	with open(OUTPUT, 'r') as html:
-# 		encoded = html.read()
-# 		if ENCODING in ['quoted-printable', 'qp', 'q-p']:
-# 			print("[+] Decoding quoted-printable text.")
-# 			# Decode the quoted-printable text
-# 			source = quopri.decodestring(encoded)
-# 		if ENCODING in ['base64', 'Base64', 'b64', 'B64']:
-# 			print("[+] Decoding Base64 text.")
-# 			print("[!] WARNING: If the output is a mess, double check your input file to make sure only the Base64 text is in the file.")
-# 			# Decode the Base64 text
-# 			source = base64.b64decode(encoded)
-# 		with open(OUTPUT, 'wb') as output:
-# 			output.write(source)
 
 # This is Step 1 - URLs are replaced with our phishing URLs and new text is saved to output file
 def replaceURL(OUTPUT):
