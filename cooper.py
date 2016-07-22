@@ -19,7 +19,8 @@ parser = OptionParser()
 parser.add_option("-o", "--output",  action="store", type="string", dest="output", help="Specifies the filename for the output HTML file. Default is output.html. Including the *.html extension is recommended.")
 parser.add_option("-e", "--email",  action="store", type="string", dest="email", help="Specifies the HTML file to use to create a phishing email template")
 parser.add_option("-m", "--embed",  action="store_true", dest="embed", help="If enabled, images will be Base64 encoded and embedded into the template")
-parser.add_option("-d", "--decode",  action="store", type="string", dest="decode", help="Tells Cooper to decode email source (accepts base64 and quoted-printable)")
+# DEPRECATED! TO BE REMOVED
+#parser.add_option("-d", "--decode",  action="store", type="string", dest="decode", help="Tells Cooper to decode email source (accepts base64 and quoted-printable)")
 parser.add_option("-p", "--phishgate",  action="store", type="string", dest="gate", help="Specifies the URL to use to create a phishgate template")
 parser.add_option("-x", "--exit",  action="store", type="string", dest="exit", help="Specifies the URL to use to create an exit template")
 parser.add_option("-u", "--url",  action="store", type="string", dest="url", help="Specifies the root URL for images in the target email or webpage")
@@ -45,16 +46,17 @@ if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
 	# If an output name is specified
 	if menu.output:
 		OUTPUT = menu.output
-		print("[+] Output file will be: " + OUTPUT)
+		print("[+] Output file will be: {}".format(OUTPUT))
 
 	# If email is selected
 	if menu.email:
 		print("[+] Processing phishing email request...")
 		FILE = menu.email
-		toolbox.openSource(FILE,OUTPUT)
-		if menu.decode:
-			ENCODING = menu.decode
-			phishemail.decodeEmailText(ENCODING,OUTPUT)
+		toolbox.openEmail(FILE,OUTPUT)
+		# DEPRECATED! TO BE REMOVED
+		#if menu.decode:
+		#	ENCODING = menu.decode
+		#	phishemail.decodeEmailText(ENCODING,OUTPUT)
 		phishemail.replaceURL(OUTPUT)
 		if menu.url:
 			URL = menu.url

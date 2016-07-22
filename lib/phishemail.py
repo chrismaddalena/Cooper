@@ -1,27 +1,28 @@
 import re # Used for RegEx
 from bs4 import BeautifulSoup # For parsing HTML
 import urllib.parse # For joining URLs for <img> tags
-import base64 # For encoding and embedding images
-import quopri # Adds support for decoding quoted-printable text
+#import base64 # For encoding and embedding images
+#import quopri # Adds support for decoding quoted-printable text
 import xml.sax.saxutils # For unescaping ;lt ;gt ;amp
 
+# DEPRECATED - TO BE REMOVED
 # This is Step 1 - Determine encoding and decode if necessary
-def decodeEmailText(ENCODING,OUTPUT):
-	with open(OUTPUT, 'r') as html:
-		encoded = html.read()
-		if ENCODING in ['quoted-printable', 'qp', 'q-p']:
-			print("[+] Decoding quoted-printable text.")
-			# Decode the quoted-printable text
-			source = quopri.decodestring(encoded)
-		if ENCODING in ['base64', 'Base64', 'b64', 'B64']:
-			print("[+] Decoding Base64 text.")
-			print("[!] WARNING: If the output is a mess, double check your input file to make sure only the Base64 text is in the file.")
-			# Decode the Base64 text
-			source = base64.b64decode(encoded)
-		with open(OUTPUT, 'wb') as output:
-			output.write(source)
+# def decodeEmailText(ENCODING,OUTPUT):
+# 	with open(OUTPUT, 'r') as html:
+# 		encoded = html.read()
+# 		if ENCODING in ['quoted-printable', 'qp', 'q-p']:
+# 			print("[+] Decoding quoted-printable text.")
+# 			# Decode the quoted-printable text
+# 			source = quopri.decodestring(encoded)
+# 		if ENCODING in ['base64', 'Base64', 'b64', 'B64']:
+# 			print("[+] Decoding Base64 text.")
+# 			print("[!] WARNING: If the output is a mess, double check your input file to make sure only the Base64 text is in the file.")
+# 			# Decode the Base64 text
+# 			source = base64.b64decode(encoded)
+# 		with open(OUTPUT, 'wb') as output:
+# 			output.write(source)
 
-# This is Step 2 - URLs are replaced with our phishing URLs and new text is saved to output file
+# This is Step 1 - URLs are replaced with our phishing URLs and new text is saved to output file
 def replaceURL(OUTPUT):
 	# Open output file, read lines, and begin parsing to replace all URLs inside <a> tags with href
 	try:
@@ -31,10 +32,10 @@ def replaceURL(OUTPUT):
 			soup = BeautifulSoup(html,"html.parser")
 			# Provide user feedback so they can verify the URLs being replaced
 			results = re.findall('<a href="?\'?([^"\'>]*)', str(soup))
-			print("[+] These %s URLs that will be replaced in the HTML:" % len(results))
+			print("[+] These {} URLs will be replaced in the HTML:".format(len(results)))
 			counter = 1
 			for result in results:
-				print("[%s] %s" % (counter, result))
+				print("[{}] {}".format(counter, result))
 				counter += 1
 			# Find all <a href... and replace URLs with our new text/URL
 			for link in soup.findAll('a', href=True):
@@ -49,7 +50,7 @@ def replaceURL(OUTPUT):
 	except:
 		print("[-] URL parsing failed. Make sure the html file exists and is readable.")
 
-# This is Step 3 - Inserts our tracking image and writes everything to the index file
+# This is Step 2 - Inserts our tracking image and writes everything to the index file
 def addTracking(OUTPUT):
 	# Define the tracking image that will be inserted
 	strTracking = '<img src="{{links.tracking}}" style="width:1px; height:1px;"/>'
@@ -62,7 +63,7 @@ def addTracking(OUTPUT):
 			if index == -1:
 				print("[!] Cooper could not find a closing body tag. There is probably an issue with the decoding or HTML! Tracking has not been inserted.")
 			else:
-				print("[+] Closing body tag found at index " + str(index))
+				print("[+] Closing body tag found at index {!s}.".format(index))
 				tracked = source[:index] + strTracking + source[index:]
 				soup = BeautifulSoup(tracked.replace('[','').replace(']',''),"html.parser")
 				source = soup.prettify()
