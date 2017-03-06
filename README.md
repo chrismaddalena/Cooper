@@ -86,6 +86,7 @@ Then you need to setup your config file. The cooper.config file provided with th
 >[Browser]
 
 >driver_path: ./chromedriver
+
 >user_agent: (Mozilla/5.0 (Windows; U; Windows NT 6.0;en-US; rv:1.9.2) Gecko/20100115 Firefox/3.6
 
 Make changes as necessary. You can create multiple config files for different phishing platforms you use, additional attack servers, or alternate user-agents. Different config files can be used by including the `-c` or `--config` arguments along with your alternate file. Otherwise, the **cooper.config** file will be used by default.
