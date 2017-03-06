@@ -1,67 +1,112 @@
-##Cooper - a person who makes or repairs casks, barrels, etc.
+# Cooper - a person who makes or repairs casks, barrels, etc.
+
 (It's a "fish in a barrel" joke. I enjoy puns!)
+
 >A Python tool for ingesting HTML and producing HTML source suitable for phishing campaigns.
 
-Note: Cooper was designed to accommodate some specific, even unusual, needs. However, it should be easy to modify Cooper for other phishing tools and projects.
+Cooper simplifies the process of cloning a target website or email for use in a phishing campaign. Just find a URL or download the raw contents of an email you want to use and feed it to Cooper. Cooper will clone the content and then automatically prepare it for use in your campaign. Scripts, images, and CSS can be modified to use direct links instead of relative links, links are changed to point to your phishing server, and forms are updated to send data to you -- all in a matter of seconds. Cooper is cross-platform and should work with MacOS, Linux, and Windows.
 
-###cooper.py:
-The main script. It may eventually offer a menu with more verbose information, so as to work better as a standalone tool. For now, Cooper has several options for specifying what you need it to do.
+No more manually editing links and forms after using wget to fetch a site. You can focus on the detail work.
 
-**Use just one...**
-* -e for Email - Use Cooper's phishemail.py module. Specify a FILE.
-* -p for Phishgate - Use Cooper's phishgate.py module. Specify a URL.
-* -x for eXit - Use Cooper's phishexit.py module. Specify a URL.
-* -n for eNcode - Use Cooper to encode an image file as a Base64 string. Useful for embedding different images into a template or customizing a cloned email/website.
-* -c for Collect - Use Cooper to collect the source of a webpage. Useful if you just want to quickly grab the source and have Cooper fix the images.
+### Basic Usage
 
-**You can also use...**
-* -o for Output - Specify a filename for the output HTML file. If a name is not provided with -o, Cooper will use index.html.
-* -d for Decode - Indicate an email needs to be decoded and specify the encoding (base64 or quoted-printable).
-* -u for URL - Specify a URL you want Cooper to use when you need it to fix links for images, CSS, and/or scripts.
-* -m for eMbed - Set embedding to True. Images will be Base64 encoded and embedded into the template when this flag is used.
-* -s for Server - Add this when you want Cooper to start the HTTP server. Specify a PORT #.
-* -h for Help - View this help information.
+Cooper offers several modules with different purposes:
 
-###Modules:
-* toolbox.py - The toolbox handles the common tasks, such as retrieving HTML source from files and webpages and starting the HTTP server.
+* page - What will certainly be the most used module. This is used for cloning a target webpage. The output is an HTML file and a screenshot of the original webpage for checking the results.
+* email - Like page, but it takes a file containing your raw email content. Just open the email in your email client, use your client's "view original" option, and save the contents. The output is an HTML file.
+* encode - A handy tool that automates Base64 encoding for any images you want to manually embed into a landing page. Give it an image file and it will output the full text needed for setting the src attribute. The output is a (probably huge) blob of text like `<img src="data:image/png;base64,QUFBQUFBQUFBCg==">`. This is why piping the output into a file is often a good idea for easier copy/pasting.
 
-* phishemail.py - This module handles generating phishing emails. Use -e and feed it raw email data. Use -u to provide a URL for img tags, scripts, and CSS.
+#### Using page
 
-* phishgate.py - This module creates an HTML file suitable as a phishgate (a landing page for the phishing emails). Use -p and feed Cooper a URL for a webpage you want to use for phishing (probably some sort of form). Use -x to feed Cooper an exit page for your campaign (like a 404 page).
+Page is Cooper's primary module. The only argument required is `-t` to specify a target URL. You can then add `--selenium` to optionally use Selenium instead of Requests. Basically, if the output looks wrong or is incomplete (maybe just a background and some styling, for example) try using `--selenium`.
 
-* phishexit.py - This module creates an HTML file just like phishgate.py. There used to be a reason for this to exist. It is deprecated and no longer necessary. It will be removed.
+Additionally, you might add `-u` with a URL to be used as the base URL for images, scripts, and style sheets. Cooper will replace relative links (e.g. /wp-content/images/foo.bar) with the full URL for you.
 
-###Usage examples:
-####Creating an email:
-* Get the source of an email and save it in a text file.
-* To process an email with images hosted on www.foo.bar: cooper.py -e email.html -u http://www.foo.bar
-* Cooper will automatically handle any necessary decoding (e.g. quoted-printable or base64).
+Always provide valid URLs for `-t` and `-u` -- i.e. http://www.example.com.
 
-####Creating a phishgate:
-* Find a webpage to clone.
-* To clone a webpage and view it in your browser: cooper.py -p http://www.foo.bar -s 8888
-* Visit 127.0.0.1:8888
+A full list of settings is below:
 
-####Creating an exit page:
-* This might be a page you want to clone without Cooper modifying the URLs, probably to display after a visitor enters information.
-* Find a 404 page, thank you page, whatever makes sense.
-* To clone the new page: cooper.py -x http://www.foo.bar/garbage.php -u http://www.foo.bar
+* -t, --target TEXT
+  * [REQUIRED] The target webpage's URL.
+* -o, --output TEXT
+  * [Optional] Specifies the filename for the output HTML file. Default is index.html. Including the .html extension is recommended.
+* -u, --url TEXT
+  * [Optional] Specifies the root URL for images in the target email or webpage.
+* -m, --embed
+  * [Optional] Base64 encode images and embed them into the output.
+* --selenium
+  * [Optional] Use Selenium to fetch the webpage's HTML source.
+* -s, --serverport TEXT
+  * [Optional] Provide a port to use for an HTTP server to serve up output files.
+* -c, --config FILE
+  * [Optional] Provide an alternate config file for Cooper to use. This is helpful if you use different phishing platforms/servers.
 
-###Misc Info:
-* URLs are replaced with text that will do **nothing** for you. This is text that was needed for the particular phishing tool Cooper was created to work with. Modify the replaceURL() functions as needed.
+#### Using email
+
+The email module is handy when you want to use an email you have as the foundation for a new phish. Handling encoding and multi-part MIME messages can be a pain when done by hand, so let Cooper do it for you. This module will parse the message contents, throw away unneeded like parts, like attachments, and get you a fully decoded version of the main email body, the plain/text or text/html parts you care about.
+
+A full list of settings is below:
+
+* -f, --file PATH
+  * [REQUIRED] The file containing the raw email contents file to parse.
+* -o, --output TEXT
+  * [Optional] Specifies the filename for the output HTML file. Default is index.html. Including the .html extension is recommended.
+* -s, --serverport TEXT
+  * [Optional] Provide a port to use for an HTTP server to serve up output files.
+  * -c, --config FILE
+    * [Optional] Provide an alternate config file for Cooper to use. This is helpful if you use different phishing platforms/servers.
+
+#### Using encode
+
+As mentioned above, this module is a one-off. The required, and only, argument is `-i` for providing the image file to encode. It's handy if you're building your own landing page or editing a page and need to add an image. If you decide to embed it, give this module a shot. It will Base64 encode the provided file and produce the text necessary for embedding the image.
+
+* -i, --image TEXT  
+  * [REQUIRED] The target file to Base64 encode.
+
+### Setup
+
+**Find the setup files inside the setup directory.**
+
+Cooper requires several libs for scraping websites and parsing the HTML. Use `pip3` and the **requirements.txt** to install dependencies.
+
+`pip3 install -r requirements.txt`
+
+Then you can check the dependencies by running **setup_check.py**.
+
+Then you need to setup your config file. The cooper.config file provided with this repo comes pre-setup for use with GoPhish (hence the {{.URL}} entries) and the Chrome driver file that also comes with this repo. The config file looks like this:
+
+>[Replacement URLs]
+
+>landing_page_url_replacement: {{.URL}}
+
+>landing_page_form_action: {{.URL}}
+
+>email_replacement_url: {{.URL}}
+
+>[Browser]
+
+>driver_path: ./chromedriver
+>user_agent: (Mozilla/5.0 (Windows; U; Windows NT 6.0;en-US; rv:1.9.2) Gecko/20100115 Firefox/3.6
+
+Make changes as necessary. You can create multiple config files for different phishing platforms you use, additional attack servers, or alternate user-agents. Different config files can be used by including the `-c` or `--config` arguments along with your alternate file. Otherwise, the **cooper.config** file will be used by default.
+
+The Replacement URLs section contains all of the URLs that Cooper will use when replacing links and form actions.
+
+The landing_page_url_replacement is the URL used for the landing page. You might want this set to the phishing server's IP so visitors are redirected back to the landing page or have them sent elsewhere. The landing_page_form_action is the URL you want the form data sent to when a form is submitted. The email_replacement_url is the URL used for emails and should be set to your phishing server's domain or IP address.
+
+If any of these URLs are set to nothing, Cooper will not replace those URLs. This is most practical for landing_page_url_replacement where you may wish to have the landing page continue to point to real links. However, be warned, the target webpage may use relative links like /home.php instead of direct links, which would mean your landing page will be full of broken links.
+
+The Browser section is just for settings related to web browsing. Use this section to point Selenium and Cooper to your browser driver if you choose to use a different driver file or location. The user-agent used for web browsing is also defined here. Cooper has a default user-agent that you can override with the config file.
+
+### Misc Info
 
 * Images can be encoded in Base64 before being embedded in a template. This is to make it so the templates are not reliant on the website being available/keeping the images where they are. The added size for a website is (most likely) negligible, but using this option for an email could be a problem. Some email clients do not support Base64 images, like Outlook(!). Keep the target's email client in mind.
 
 * The HTTP server option is there to enable you to easily review Cooper's output by hitting 127.0.0.1:PORT. You could just open the HTML file, but that's not as neat.
 
-###Known issues
+### Known Issues
 * If the website is hosted on a service like SquareSpace, Cooper will be unable to repair the images. The img tags look like: "\<img src="//static1.squarespace.com/static/52ebedcae4b0ad4aad060b4a/t/533b687ae4b01d79d0ae12a3/1437187699809/?format=1500w"\>.
 
-###Setup:
-**Find the setup files inside the setup directory.**
-Cooper requires several libs for scraping websites and parsing the HTML. Use pip3 and the requirements.txt to install dependencies.
->pip3 install -r requirements.txt
-
-Then you can check the dependencies by running setup_check.py.
+### Final Words
 
 Special thanks to Ninjasl0th and Hagbard for his help with this project!

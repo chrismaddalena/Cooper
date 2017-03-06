@@ -1,128 +1,121 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-'''
-Coopers make barrels, like cooper.py makes barrels for phish.
-Cooper.py was created by Chris Maddalena for use with eSentire's phishing tool.
-The script will clone a website and automatically process the html to prepare it
-for use in a phishing campaign.
-'''
-import sys
-import os
-import time
-# Using init file and we'll import all modules from the lib dir.
-# This cleans up some code lines.
-from lib import *
-from optparse import OptionParser
 
-# Create options menu
-parser = OptionParser()
-parser.add_option("-o", "--output",  action="store", type="string", dest="output", help="Specifies the filename for the output HTML file. Default is output.html. Including the *.html extension is recommended.")
-parser.add_option("-e", "--email",  action="store", type="string", dest="email", help="Specifies the HTML file to use to create a phishing email template")
-parser.add_option("-m", "--embed",  action="store_true", dest="embed", help="If enabled, images will be Base64 encoded and embedded into the template")
-# DEPRECATED! TO BE REMOVED
-#parser.add_option("-d", "--decode",  action="store", type="string", dest="decode", help="Tells Cooper to decode email source (accepts base64 and quoted-printable)")
-parser.add_option("-p", "--phishgate",  action="store", type="string", dest="gate", help="Specifies the URL to use to create a phishgate template")
-parser.add_option("-x", "--exit",  action="store", type="string", dest="exit", help="Specifies the URL to use to create an exit template")
-parser.add_option("-u", "--url",  action="store", type="string", dest="url", help="Specifies the root URL for images in the target email or webpage")
-parser.add_option("-s", "--serverport", action="store", type="int", dest="serverport", help="Use to start an HTTP server to serve up output files")
-parser.add_option("-n", "--encode", action="store", type="string", dest="encode", help="Use to encode an image in Base64 for embedding -- recommend using with > output.txt")
-parser.add_option("-c", "--collect",  action="store", type="string", dest="collect", help="Pass a URL to create an output file with unchanged page source")
-(menu, args) = parser.parse_args()
+"""
+  CCC
+ C
+ C    ooo ooo ppp  eee rrr
+ C    o o o o p  p e e r
+  CCC ooo ooo ppp  ee  r
+	      p
+	      p
 
-# Default filename for the output files
-OUTPUT = "index.html"
+Developer: Chris Maddalena
 
-# Does the user want images to be encoded/embedded? True or False
-EMBED = menu.embed
+Cooper simplifies the process of cloning a target website or email for use in a
+phishing campaign. Just find a URL or download the raw contents of an email you
+want to use and feed it to Cooper. Cooper will clone the content and then
+automatically prepare it for use in your campaign. Scripts, images, and CSS can
+be modified to use direct links instead of relative links, links are changed to
+point to your phishing server, and forms are updated to send data to you -- all
+in a matter of seconds. Cooper is cross-platform and should work with MacOS,
+Linux, and Windows.
+"""
 
-os.system('cls' if os.name == 'nt' else 'clear')
+import os               # Used primarily to identify OS and clear terminal
+import click            # The awesome Command Line Interface Creation Kit
+from lib import toolbox # Import the custom Toolbox class
+from lib import banners # Import sweet ASCII art
 
-time.sleep(1)
 
-banners.printArt()
+# Setup for CLICK interface
+class AliasedGroup(click.Group):
+	"""Allows commands to be called by their first unique character."""
 
-# Process script options
-if menu.gate or menu.email or menu.exit or menu.encode or menu.collect:
-	# If an output name is specified
-	if menu.output:
-		OUTPUT = menu.output
-		print("[+] Output file will be: {}".format(OUTPUT))
+	def get_command(self, ctx, cmd_name):
+		"""
+		Allows commands to be called by thier first unique character
+		:param ctx: Context information from click
+		:param cmd_name: Calling command name
+		:return:
+		"""
+		rv = click.Group.get_command(self, ctx, cmd_name)
+		if rv is not None:
+			return rv
+		matches = [x for x in self.list_commands(ctx)
+			if x.startswith(cmd_name)]
+		if not matches:
+			return None
+		elif len(matches) == 1:
+			return click.Group.get_command(self, ctx, matches[0])
+		ctx.fail('Too many matches: %s' % ', '.join(sorted(matches)))
 
-	# If email is selected
-	if menu.email:
-		print("[+] Processing phishing email request...")
-		FILE = menu.email
-		toolbox.openEmail(FILE,OUTPUT)
-		# DEPRECATED! TO BE REMOVED
-		#if menu.decode:
-		#	ENCODING = menu.decode
-		#	phishemail.decodeEmailText(ENCODING,OUTPUT)
-		phishemail.replaceURL(OUTPUT)
-		if menu.url:
-			URL = menu.url
-			if menu.embed == True:
-				toolbox.fixImageEncode(URL,OUTPUT)
-			else:
-				toolbox.fixImageURL(URL,OUTPUT)
-		else:
-			print("[!] No URL provided, so images will not be processed.")
-		phishemail.addTracking(OUTPUT)
 
-	# If phishgate is selected
-	if menu.gate:
-		print("[+] Processing phishgate request...")
-		URL = menu.gate
-		toolbox.collectSource(URL,OUTPUT)
-		phishgate.replaceURL(URL,OUTPUT)
-		phishgate.fixForms(OUTPUT)
-		if menu.url:
-			if menu.embed == True:
-				toolbox.fixImageEncode(URL,OUTPUT)
-			else:
-				toolbox.fixImageURL(URL,OUTPUT)
-		else:
-			print("[!] No URL provided, so images will not be processed.")
-		# Insert this URL last to avoid fixImageURL() & replaceURL() replacing the JS link
-		# Uncomment the line below if you have set a URL for the JavaScript file
-		#phishgate.insertPwdEval(OUTPUT)
+# Create a CLICK alias group for help text
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
-	#If exit template is selected
-	if menu.exit:
-		print("[+] Processing exit template request...")
-		URL = menu.exit
-		toolbox.collectSource(URL,OUTPUT)
-		if menu.url:
-			URL = menu.url
-			if menu.embed == True:
-				toolbox.fixImageEncode(URL,OUTPUT)
-			else:
-				toolbox.fixImageURL(URL,OUTPUT)
-		else:
-			print("[!] No URL provided, so images will not be processed.")
+@click.group(cls=AliasedGroup, context_settings=CONTEXT_SETTINGS)
+def cooper():
+	"""
+    Coopers make barrels, like cooper.py makes barrels for phish.
+    Cooper.py was created by Chris Maddalena as a helpful tool compatible with
+    any phishing tool. The script will clone a website and automatically process
+    the html to prepare it for use in a phishing campaign.
+	"""
+	# Everything starts here
+	pass
 
-	# If image encoding is enabled
-	if menu.encode:
-		toolbox.encodeImage(menu.encode)
 
-	# If page source collection is selected
-	if menu.collect:
-		print("[+] Collecting source and exiting...")
-		URL = menu.collect
-		toolbox.collectSource(URL,OUTPUT)
-		if menu.url:
-			URL = menu.url
-			if menu.embed == True:
-				toolbox.fixImageEncode(URL,OUTPUT)
-			else:
-				toolbox.fixImageURL(URL,OUTPUT)
-		else:
-			print("[!] No URL provided, so images will not be processed.")
+# Create the PAGE module
+@cooper.command(name="page", short_help="Used to clone a target webpage.")
+@click.option("-t", "--target", help="The target webpage's URL.", required=True)
+@click.option("-o", "--output", help="[Optional] Specifies the filename for the output HTML file. Default is index.html. Including the *.html extension is recommended.")
+@click.option("-u", "--url", help="[Optional] Specifies the root URL for images in the target email or webpage.")
+@click.option("-m", "--embed", is_flag=True, help="[Optional] Base64 encode images and embed them into the output.")
+@click.option("--selenium", is_flag=True, help="[Optional] Use Selenium to fetch the webpage's HTML source.")
+@click.option("-c", "--config", help="[Optional] Provide an alternate config file for Cooper.")
+@click.option("-s", "--serverport", help="[Optional] Provide a port to use for an HTTP server to serve up output files.")
+@click.pass_context
+def page(self, target, output, url, embed, selenium, serverport, config):
+    """Used to clone a target webpage."""
+    t = toolbox.Toolbox(config)
+    t.process_webpage(target, output, url, embed, selenium)
 
-	# If the user requests the HTTP server to be started
-	if menu.serverport:
-		PORT = menu.serverport
-		print("[+] Starting HTTP server on port", PORT)
-		toolbox.startHTTPServer(PORT)
-else:
-	# Print help if -h is used or an invalid combination of options/input is used
-	parser.print_help()
+    if serverport is not None:
+        print("[+] Starting HTTP server on port", serverport)
+        t.start_http_server(serverport)
+
+
+# Create the EMAIL module
+@cooper.command(name="email", short_help="Used to process files contianing raw email text collected from an email client.")
+@click.option("-f", "--file", type=click.Path(exists=True, readable=True, resolve_path=True), help="The file containing the raw email contents file to parse.", required=True)
+@click.option("-o", "--output", help="[Optional] Specifies the filename for the output HTML file. Default is index.html. Including the *.html extension is recommended.")
+@click.option("-c", "--config", help="[Optional] Provide an alternate config file for Cooper.")
+@click.option("-s", "--serverport", help="[Optional] Provide a port to use for an HTTP server to serve up output files.")
+@click.pass_context
+def email(self, file, output, serverport, config):
+    """Used to process files contianing raw email text collected from an email client."""
+    t = toolbox.Toolbox(config)
+    t.process_email(file, output)
+
+    if serverport is not None:
+        print("[+] Starting HTTP server on port", serverport)
+        t.start_http_server(serverport)
+
+
+# Create the ENCODE module
+@cooper.command(name="encode", short_help="Used to encode image files and get the Base64 string for embedding. Piping the output to a file is recommended.")
+@click.option("-i", "--image", help="The target file to Base64 encode.", required=True)
+@click.pass_context
+def encode(self, image):
+    """Used to encode image files and get the Base64 string for embedding.
+    Piping the output to a file is recommended.
+    """
+    t = toolbox.Toolbox(None)
+    t.encode_image(image)
+
+
+if __name__ == "__main__":
+    os.system('cls' if os.name == 'nt' else 'clear')
+    banners.printArt()
+    cooper()
