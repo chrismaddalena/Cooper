@@ -4,7 +4,7 @@
 """
   CCC
  C
- C    ooo ooo ppp  eee rrr
+ C    ooo ooo pp  eee rrr
  C    o o o o p  p e e r
   CCC ooo ooo ppp  ee  r
 	      p
