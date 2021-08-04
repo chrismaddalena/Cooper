@@ -11,19 +11,29 @@ print("This must be run with Python 3!")
 sleep(2)
 
 try:
-	from bs4 import BeautifulSoup
-	print('[+] FOUND: BeautifulSoup4')
+    from bs4 import BeautifulSoup
+
+    print("[+] FOUND: BeautifulSoup4")
 except:
-	print('[!] MISSING: BeautifulSoup4')
+    print("[!] MISSING: BeautifulSoup4")
 
 try:
-	import requests
-	print('[+] FOUND: Requests')
+    import requests
+
+    print("[+] FOUND: Requests")
 except:
-	print('[!] MISSING: Requests')
+    print("[!] MISSING: Requests")
 
 try:
-	import click
-	print('[+] FOUND: Click')
+    import click
+
+    print("[+] FOUND: Click")
 except:
-	print('[!] MISSING: Click')
+    print("[!] MISSING: Click")
+
+try:
+    import selenium
+
+    print("[+] FOUND: Selenium")
+except:
+    print("[!] MISSING: Selenium")

@@ -1,13 +1,15 @@
+# Standard Libraries
 import random
 
+
 def printArt():
-	r1 = """\
+    r1 = """\
 
   CCC
  C
  C    ooo ooo ppp  eee rrr
  C    o o o o p  p e e r
-  CCC ooo ooo ppp  ee r
+  CCC ooo ooo ppp  ee  r
 	      p
 	      p                      _
 			             |
@@ -23,7 +25,7 @@ o   o                              ^ |
 
 """
 
-	r2 = """
+    r2 = """
 Welcome to Cooper!
   CCC
  C
@@ -45,5 +47,5 @@ Welcome to Cooper!
 		 `'      `'
 """
 
-	art = [r1,r2]
-	print (random.choice(art))
+    art = [r1, r2]
+    print(random.choice(art))
