@@ -2,17 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-  CCC
- C
- C    ooo ooo ppp  eee rrr
- C    o o o o p  p e e r
-  CCC ooo ooo ppp  ee  r
-          p
-          p
-
-Developer: Christopher Maddalena
-
-This contains the Toolbox class used for Cooper. Toolbox contains all of the
+This contains the ``Toolbox`` class used for Cooper. ``Toolbox`` contains all of the
 carpentry tools necessary to making a fine barrel for some phish.
 """
 
@@ -25,6 +15,7 @@ import socketserver
 import sys
 import urllib.parse
 import xml.sax.saxutils
+from mimetypes import guess_extension
 
 # 3rd Party Libraries
 import requests
@@ -84,7 +75,7 @@ class Toolbox(object):
             print(
                 "[!] Could not open the config file -- make sure it exists and is readable."
             )
-            print("L.. Details: {}".format(err))
+            print(f"L.. Details: {err}")
 
         # Parse the config file's values
         try:
@@ -101,13 +92,10 @@ class Toolbox(object):
                 "email_tracker_url"
             ]
             self.path_to_chromedriver = self.config_section_map("Browser")["driver_path"]
-            if self.config_section_map("Browser")["user_agent"] == "":
-                self.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:90.0) Gecko/20100101 Firefox/90.0"
-            else:
-                self.user_agent = self.config_section_map("Browser")["user_agent"]
+            self.user_agent = self.config_section_map("Browser")["user_agent"]
         except Exception as err:
             print("[!] Failed to read all values from the config file! Exiting...")
-            print("L.. Details: {}".format(err))
+            print(f"L.. Details: {err}")
             sys.exit()
 
     def config_section_map(self, section):
@@ -119,9 +107,9 @@ class Toolbox(object):
             try:
                 section_dict[option] = self.config_parser.get(section, option)
                 if section_dict[option] == -1:
-                    print("[-] Skipping: {}".format(option))
+                    print(f"[-] Skipping: {option}")
             except:
-                print("[!] There was an error with: {}".format(option))
+                print(f"[!] There was an error with: {option}")
                 section_dict[option] = None
         return section_dict
 
@@ -145,7 +133,7 @@ class Toolbox(object):
         and then saves source to the output file.
         """
 
-        print("[+] Collecting HTML source from:\n{}".format(target))
+        print(f"[+] Collecting HTML source from:\n{target}")
         try:
             headers = {"User-Agent": self.user_agent}
             if selenium:
@@ -162,12 +150,8 @@ class Toolbox(object):
                 source = driver.page_source
 
                 screenshot_file_name = target.split(".")[1]
-                print(
-                    "[+] Taking a snapshot of the original page and saving it as {}.png".format(
-                        screenshot_file_name
-                    )
-                )
-                driver.save_screenshot("{}.png".format(screenshot_file_name))
+                print(f"[+] Taking a snapshot of the original page and saving it as {screenshot_file_name}.png")
+                driver.save_screenshot(f"{screenshot_file_name}.png")
 
                 driver.quit()
             else:
@@ -182,33 +166,25 @@ class Toolbox(object):
             print(
                 "[!] Failed to connect to target -- This must be valid and a fully qualified URL, e.g. http://www.foo.bar."
             )
-            print("L.. Details: {!s}\n".format(err))
+            print(f"L.. Details: {err}\n")
             sys.exit()
 
         # Find and replace the source code's URLs
         try:
             if self.landing_page_url_replacement != "":
-                print(
-                    "[+] Replacing the URLs in the HTML source with: {}".format(
-                        self.landing_page_url_replacement
-                    )
-                )
+                print(f"[+] Replacing the URLs in the HTML source with: {self.landing_page_url_replacement}")
                 for link in soup.findAll("a", href=True):
                     link["href"] = self.landing_page_url_replacement
             else:
                 print(
-                    "[-] Warning: No URL provided for landing_page_url_replacement in config file, so the webpage's links will be preserved."
+                    "[*] Warning: No URL provided for `landing_page_url_replacement` in config file, so the webpage's links will be preserved."
                 )
 
             if url is not None:
                 # Check the URL because if it's invalid it will not work here
                 try:
                     r = requests.get(url)
-                    print(
-                        "[+] Updating the link and script tag src attrbitues with: {}".format(
-                            url
-                        )
-                    )
+                    print(f"[+] Updating the link and script tag src attrbitues with: {url}")
                     # Find all links and replace URLs with our new text/URLs
                     for link in soup.findAll("link", href=True):
                         link["href"] = urllib.parse.urljoin(url, link["href"])
@@ -220,19 +196,15 @@ class Toolbox(object):
                     else:
                         soup = self.fix_images_url(url, soup, file_descriptor)
                 except Exception as err:
-                    print(
-                        "[!] The provided base URL, {}, did not work for repairing links and images. This must be valid and a fully qualified URL, e.g. http://www.foo.bar.".format(
-                            url
-                        )
-                    )
-                    print("L.. Details: {}".format(err))
+                    print(f"[!] The provided base URL, {url}, did not work for repairing links and images. This must be valid and a fully qualified URL, e.g. http://www.foo.bar.")
+                    print(f"L.. Details: {err}")
             else:
                 print(
-                    "[-] Warning: No URL provided with --url for updating links, so skipping updating img, link, and script tags."
+                    "[*] Warning: No URL provided with `--url` for updating links, so skipping updating `img`, `link`, and `script` tags."
                 )
         except Exception as err:
             print("[!] URL parsing failed!")
-            print("L.. Details: {}".format(err))
+            print(f"L.. Details: {err}")
 
         # Find and replace the source code's form actions
         print("[+] Proceeding with updating form actions...")
@@ -243,21 +215,17 @@ class Toolbox(object):
             print("[+] Form parsing was successful!")
         except Exception as err:
             print("[!] Form parsing failed!")
-            print("L.. Details: {}".format(err))
+            print(f"L.. Details: {err}")
 
         try:
             # Fix/unescape characters translated to ;lt ;gt ;amp
             source = soup.prettify()
             source = xml.sax.saxutils.unescape(source)
             file_descriptor.write(source)
-            print(
-                "[+] All operations are complete and the output written to {}".format(
-                    self.output_file_name
-                )
-            )
+            print(f"[+] All operations are complete and the output written to {self.output_file_name}")
         except Exception as err:
             print("[!] Could not write to the output file!")
-            print("L.. Details: {}".format(err))
+            print(f"L.. Details: {err}")
 
     def _build_output_file(self, output):
         """Set an output file name -- either default or user defined."""
@@ -266,19 +234,19 @@ class Toolbox(object):
         else:
             self.output_file_name = output
 
-    def fix_images_url(self, url, soup, file_descriptor):
+    def fix_images_url(self, url, soup):
         """
         Look for images in the source and update the src attrtibutes with
-        the provided base URL from --url.
+        the provided base URL from ``--url``.
         """
 
         # Open output file, read lines, and begin parsing to replace all incomplete img src URLs
-        print("[+] Proceeding with updating IMG tag src attributes using: {}".format(url))
-        print("[+] The src attrbitues that will be modified:")
+        print(f"[+] Proceeding with updating IMG tag src attributes using: {url}")
+        print("[+] The src attributes that will be modified:")
         try:
             # Find all ``<img>`` with ``src`` attribute and create a full URLs
             for img in soup.findAll("img"):
-                print("* {}".format(img))
+                print(f"* {img}")
                 imgurl = urllib.parse.urljoin(url, img["src"])
                 img["src"] = imgurl
 
@@ -288,25 +256,25 @@ class Toolbox(object):
             print(
                 "[!] IMG parsing failed. Some images may not have URLs, ex: src = cid:image001.jpg@01CEAD4C.047C2E50."
             )
-            print("L.. Details: {!s}\n".format(err))
+            print(f"L.. Details: {err}\n")
 
         return soup
 
-    def fix_images_encode(self, url, soup, file_descriptor):
-        """Update the ``src`` attribute is updated to a Base64 encoded verison of the images."""
+    def fix_images_encode(self, url, soup):
+        """Update the ``src`` attribute to a Base64 encoded verison of the images."""
 
         # Open output file, read lines, and begin parsing to replace all incomplete img src URLs
-        print("[+] Proceeding with updating IMG tag src attributes using: {}".format(url))
+        print(f"[+] Proceeding with updating IMG tag src attributes using: {url}")
         print("[+] The src attrbitues that will be modified:")
         try:
             # Find all ``<img>`` with ``src`` attribute and create a full URLs
             for img in soup.findAll("img"):
-                print("* {}".format(img))
+                print(f"* {img}")
                 imgurl = urllib.parse.urljoin(url, img["src"])
                 image = urllib.request.urlopen(imgurl)
                 # Encode in Base64 and embed
                 img_64 = base64.b64encode(image.read())
-                img["src"] = "data:image/png;base64,{}".format(img_64.decode("ascii"))
+                img["src"] = f"data:image/png;base64,{img_64.decode('ascii')}"
 
             print("[+] IMG parsing was successful!")
         except Exception as err:
@@ -314,7 +282,7 @@ class Toolbox(object):
             print(
                 "[!] IMG parsing failed. Some images may not have URLs, ex: src = cid:image001.jpg@01CEAD4C.047C2E50."
             )
-            print("L.. Details: {!s}\n".format(err))
+            print(f"L.. Details: {err}\n")
 
         return soup
 
@@ -326,16 +294,12 @@ class Toolbox(object):
         try:
             port = int(port)
         except Exception as err:
-            print(
-                "[!] Make sure the provided port, {}, is a valid port number.".format(
-                    port
-                )
-            )
+            print("[!] Make sure the provided port, {port}, is a valid port number.")
             sys.exit()
         # Try to start the web server on the localhost using the provided port
         try:
             httpd = socketserver.TCPServer(("", port), handler)
-            print("[+] Server started. Browse to 127.0.0.1:{}".format(port))
+            print(f"[+] Server started. Browse to 127.0.0.1:{port}")
             print("[!] Use CTRL+C to kill the web server.")
             # Serve until it is killed
             httpd.serve_forever()
@@ -343,7 +307,7 @@ class Toolbox(object):
             print(
                 "[-] Server stopped or could not be started. Please try a different port."
             )
-            print("L.. Details: {}".format(err))
+            print(f"L.. Details: {err}")
 
     def encode_image(self, image):
         """
@@ -357,24 +321,32 @@ class Toolbox(object):
             img_64 = '<img src="data:image/png;base64,{}">'.format(
                 base64.b64encode(image.read()).decode("ascii")
             )
-            print(img_64 + "\n")
+            print(f"{img_64}\n")
             print("[+] End of encoded string.")
+
+    def decode_image(self, encoded_string, filename):
+        """Take a Base64-encoded attachment, decode it, and save contents to a file."""
+
+        with open(filename, "wb") as f:
+            print(f"[+] Decoded attachment to {filename}")
+            f.write(base64.b64decode(encoded_string))
 
     def parse_email(self, email_file, file_descriptor):
         """
         Takes a txt or html file with raw email source, ingests contents, and
         modifies it for phishing.
         """
+        inline_images = {}
 
         # Open the email file and parse its contents
-        print("[+] Opening source email file: {}".format(email_file))
+        print(f"[+] Opening source email file: {email_file}")
         with open(email_file, "r") as input_file:
             # Read-in the raw email content
             try:
                 e = email.message_from_string(input_file.read())
             except Exception as err:
                 print("[!] Failed to open the email file!")
-                print("L.. Details: {}".format(err))
+                print(f"L.. Details: {err}")
 
             try:
                 # Check if the email is a multipart MIME message or not
@@ -389,11 +361,21 @@ class Toolbox(object):
                         attachment = payload.get_filename()
                         # We need to ditch the attachments, so detect and drop them
                         if attachment is not None:
-                            print(
-                                "[+] Attachment detected and discarded: {}, {}".format(
-                                    content_disposition, attachment
-                                )
-                            )
+                            if content_disposition == "inline":
+                                print(f"[+] Attempting to save detected inline image: {attachment}")
+                                cid = payload.get("Content-ID")
+                                cid = cid.strip("<").strip(">")
+                                content_type = payload.get_content_type()
+                                ext = guess_extension(content_type)
+                                filename = f"{cid}{ext}"
+                                encoded_image = payload.get_payload(decode=False)
+                                if cid:
+                                    inline_images[cid] = filename
+                                    self.decode_image(encoded_image, filename)
+                                else:
+                                    print(f"[+] Detected inline image did not have a `cid`, so skipped {attachment}")
+                            else:
+                                print(f"[+] Attachment detected and discarded: {content_disposition}, {attachment}")
                         # Find the plaintext and HTML parts
                         elif payload.get_content_type() == "text/html":
                             source += payload.get_payload(decode=True).decode(
@@ -407,36 +389,35 @@ class Toolbox(object):
                     # Replace the URLs
                     soup = BeautifulSoup(source, "html.parser")
                     if self.email_replacement_url != "":
-                        print(
-                            "[+] Replacing any URLs in the email content: {}".format(
-                                self.email_replacement_url
-                            )
-                        )
+                        print(f"[+] Replacing any URLs in the email content: {self.email_replacement_url}")
                         for link in soup.findAll("a", href=True):
                             link["href"] = self.email_replacement_url
                     else:
                         print(
-                            "[-] Warning: No URL provided for email_replacement_url in config file, so the email's links will be preserved."
+                            "[-] Warning: No URL provided for `email_replacement_url` in config file, so the email's links will be preserved."
                         )
+
+                    # Replace inline images with new filenames
+                    for img in soup.findAll("img", src=True):
+                        src = img["src"].replace("cid:", "")
+                        if src in inline_images.keys():
+                            img["src"] = inline_images[src]
 
                     try:
                         # Prettify update source from a blob of HTML to human readable source
                         source = soup.prettify()
+
                         # Fix/unescape characters translated to ;lt ;gt ;amp
                         source = xml.sax.saxutils.unescape(source)
 
+                        # Add tracker URL
                         source = self.add_tracker_to_email(source)
 
                         # Write the updated source while removing the added [' and ']
                         file_descriptor.write(source.replace("[", "").replace("]", ""))
-                        print(
-                            "[+] All operations are complete and the output written to {}".format(
-                                self.output_file_name
-                            )
-                        )
                     except Exception as err:
                         print("[!] Could not write to the output file!")
-                        print("L.. Details: {}".format(err))
+                        print(f"L.. Details: {err}")
                 else:
                     # We have a non-multipart message, so write out what we have
                     print("[+] Processing non-multipart email message...")
@@ -448,11 +429,7 @@ class Toolbox(object):
                     # Replace the URLs
                     soup = BeautifulSoup(source, "html.parser")
                     if self.email_replacement_url != "":
-                        print(
-                            "[+] Replacing any URLs in the email content: {}".format(
-                                self.email_replacement_url
-                            )
-                        )
+                        print(f"[+] Replacing any URLs in the email content: {self.email_replacement_url}")
                         for link in soup.findAll("a", href=True):
                             link["href"] = self.email_replacement_url
                     else:
@@ -469,31 +446,20 @@ class Toolbox(object):
                         source = xml.sax.saxutils.unescape(source)
                         # Write the updated source while removing the added [' and ']
                         file_descriptor.write(source.replace("[", "").replace("]", ""))
-                        print(
-                            "[+] All operations are complete and the output written to {}".format(
-                                self.output_file_name
-                            )
-                        )
                     except Exception as err:
                         print("[!] Could not write to the output file!")
-                        print("L.. Details: {}".format(err))
+                        print(f"L.. Details: {err}")
 
-                print(
-                    "[+] All processes are complete! Check your output file: {}".format(
-                        self.output_file_name
-                    )
-                )
+                print(f"[+] All processes are complete! Check your output file: {self.output_file_name}")
             except Exception as err:
                 print("[!] Failed to write out the email contents!")
-                print("L.. Details: {}".format(err))
+                print(f"L.. Details: {err}")
 
     def add_tracker_to_email(self, source):
         """Insert a tracking image and write everything to the index file."""
 
         # Define the tracking image that will be inserted
-        tracking_string = '<img src="{}" style="width:1px; height:1px;"/>'.format(
-            self.email_tracker_url
-        )
+        tracking_string = f'<img src="{self.email_tracker_url}" style="width:1px; height:1px;"/>'
         print("[+] Attempting to insert the tracking image.")
         try:
             # Find the closing body tag in the email
@@ -502,15 +468,11 @@ class Toolbox(object):
                 print(
                     "[!] Cooper could not find a closing body tag. A tracking image has not been inserted."
                 )
-                print(
-                    'L.. If desired, manually add: <img src="{}" style="width:1px; height:1px;"/>'.format(
-                        self.email_tracker_url
-                    )
-                )
+                print(f'L.. If desired, manually add: <img src="{self.email_tracker_url}" style="width:1px; height:1px;"/>')
 
                 return source
             else:
-                print("[+] Closing body tag found at index {!s}.".format(index))
+                print(f"[+] Closing body tag found at index {index}.")
                 tracked_source = source[:index] + tracking_string + source[index:]
                 print("[+] Tracking has been inserted.")
 
@@ -520,8 +482,4 @@ class Toolbox(object):
             print(
                 "[!] Cooper could not find a closing body tag. A tracking image has not been inserted."
             )
-            print(
-                'L.. If desired, manually add: <img src="{}" style="width:1px; height:1px;"/>'.format(
-                    self.email_tracker_url
-                )
-            )
+            print(f'L.. If desired, manually add: <img src="{self.email_tracker_url}" style="width:1px; height:1px;"/>')
