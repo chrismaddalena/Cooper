@@ -7,8 +7,8 @@
  C    ooo ooo ppp  eee rrr
  C    o o o o p  p e e r
   CCC ooo ooo ppp  ee  r
-	      p
-	      p
+	          p
+	          p
 
 Developer: Christopher Maddalena
 
