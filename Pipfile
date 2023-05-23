@@ -7,7 +7,7 @@ verify_ssl = true
 
 [packages]
 bs4 = "0.0.1"
-requests = "2.27.1"
+requests = "2.31.0"
 click = "8.0.4"
 selenium = "4.1.1"
 
