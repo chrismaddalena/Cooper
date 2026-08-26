@@ -1,4 +1,4 @@
 bs4==0.0.2
 requests==2.31.0
-click==8.4.2
+click==8.5.0
 selenium==4.45.0
